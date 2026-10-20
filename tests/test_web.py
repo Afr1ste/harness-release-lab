@@ -38,7 +38,8 @@ def test_job_lifecycle_and_admission(tmp_path):
             time.sleep(0.1)
         assert result["status"] == "completed"
         run_id = result["run_id"]
-        assert client.get("/api/runs/" + run_id).json()["passed"]
+        report = client.get("/api/runs/" + run_id).json()
+        assert report["passed"], [case for case in report["cases"] if not case["passed"]]
         assert len(client.get("/api/runs").json()) == 1
         assert (
             "attachment;"

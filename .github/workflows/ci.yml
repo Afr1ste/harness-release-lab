@@ -22,7 +22,7 @@ jobs:
       - run: python -m pip install -e ".[dev,dsh,pydantic-ai]"
       - run: ruff check src tests examples scripts
       - run: ruff format --check src tests examples scripts
-      - run: pytest -q --junitxml=.lab/test-results.xml
+      - run: pytest -q --basetemp=.lab/test-work --junitxml=.lab/test-results.xml
       - run: python scripts/check_gateway_stability.py
       - run: hrl demo --dsh
       - run: python -m examples.http.verify
@@ -41,6 +41,8 @@ jobs:
             .lab/runs/*/report.html
             .lab/runs/*/junit.xml
             .lab/test-results.xml
+            .lab/test-work/**/report.json
+            .lab/stability-*/**/report.json
             .lab/http/*/report.json
             .lab/http/*/report.html
             .lab/http/*/junit.xml
