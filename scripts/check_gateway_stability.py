@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 repository = Path(__file__).resolve().parents[1]
+(repository / ".lab").mkdir(exist_ok=True)
 for iteration in range(5):
     print(f"Gateway stability check {iteration + 1}/5", flush=True)
     subprocess.run(

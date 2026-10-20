@@ -22,6 +22,7 @@ jobs:
       - run: python -m pip install -e ".[dev,dsh,pydantic-ai]"
       - run: ruff check src tests examples scripts
       - run: ruff format --check src tests examples scripts
+      - run: python -c "from pathlib import Path; Path('.lab').mkdir(exist_ok=True)"
       - run: pytest -q --basetemp=.lab/test-work --junitxml=.lab/test-results.xml
       - run: python scripts/check_gateway_stability.py
       - run: hrl demo --dsh

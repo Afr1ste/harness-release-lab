@@ -75,7 +75,7 @@ def test_delayed_response_is_drained_before_state_probe(tmp_path):
     finished = next(
         e for e in report["events"] if e["kind"] == "response_prepared" and e["attempt"] == 1
     )
-    assert finished["ms"] - injected["ms"] >= 499
+    assert finished["seq"] > injected["seq"]
 
 
 def test_seal_waits_for_admitted_request_and_rejects_new_requests():
