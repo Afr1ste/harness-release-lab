@@ -5,11 +5,13 @@ Keep controls: a deliberately broken implementation must fail, and a corrected
 one must pass the same contract.
 
 ```sh
-python -m pip install -e ".[dev,dsh]"
-ruff check src tests examples
-ruff format --check src tests examples
+python -m pip install -e ".[dev,dsh,pydantic-ai]"
+ruff check src tests examples scripts
+ruff format --check src tests examples scripts
 pytest -q
 hrl demo --dsh
+python -m examples.http.verify --dsh
+python -m examples.http.verify --pydantic-ai
 ```
 
 For changes to the DSH bridge, test the published runtime, not a hand-built substitute.

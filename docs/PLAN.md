@@ -1,6 +1,6 @@
 # Implementation and acceptance plan
 
-Date: 2026-10-20. Status: v0.2.1 public release validation in progress.
+Date: 2026-10-20. Status: v0.2.1 engineering release checks passed.
 
 ## Autonomous release acceptance
 
@@ -8,8 +8,12 @@ Date: 2026-10-20. Status: v0.2.1 public release validation in progress.
 - [x] Detect both duplicate and swallowed orders through independent state.
 - [x] Fix false blocks from the reference fixture's normal-request deadline.
 - [x] Pass 66 local tests, including a deliberately slow concurrent service.
-- [ ] Pass Windows/Linux and Python 3.11/3.12 on public GitHub Actions.
-- [ ] Verify a clean installed wheel and publish an experimental release.
+- [x] Pass Windows/Linux and Python 3.11/3.12 on public GitHub Actions.
+- [x] Verify a clean installed wheel in all four remote environments.
+
+Verified run: [39421817379](https://github.com/Afr1ste/harness-release-lab/actions/runs/39421817379).
+Exact commit: `dffb688dce58695be180177d343bb8dce251804d`.
+Experimental release assets and their tag identify the published snapshot.
 
 ## v0.2 response to the commercial-value review
 

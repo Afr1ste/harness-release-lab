@@ -15,8 +15,13 @@
   [重复下单](evidence/pydantic-broken.html)、
   [过度去重](evidence/pydantic-over-dedup.html)。
 - 公开仓库：[Afr1ste/harness-release-lab](https://github.com/Afr1ste/harness-release-lab)。
-  跨平台结果以 [Actions](https://github.com/Afr1ste/harness-release-lab/actions/workflows/ci.yml)
-  实际运行状态为准；此处不把工作流配置当作通过证据。
+- 远程 [Actions 39421817379](https://github.com/Afr1ste/harness-release-lab/actions/runs/39421817379)
+  四组任务全部成功：Ubuntu / Windows × Python 3.11 / 3.12。
+  提交：`dffb688dce58695be180177d343bb8dce251804d`。
+  每组执行完整测试、DSH 原生控制组、三类外部命令集成、打包及仓库外干净安装。
+- 本地最终 wheel SHA256：
+  `b7884309d738c7fd8ba343dd0d2b34c64616f317eb3d7e7f8963675d5d714f4b`。
+  包名：`harness_release_lab-0.2.1-py3-none-any.whl`，42,366 字节。
 
 本次仍没有第三方客户试用或付费需求证据。Pydantic AI 集成不是商业验证。
 
