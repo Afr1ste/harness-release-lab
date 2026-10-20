@@ -37,6 +37,7 @@ packages = ["src/harness_release_lab"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100

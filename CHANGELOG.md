@@ -5,6 +5,9 @@
 - Integrate Pydantic AI's installed Agent, tool execution and ModelRetry path.
 - Verify that final-response success can coexist with duplicate or missing business effects.
 - Pin the optional integration dependency and exercise it in the CI matrix.
+- Keep normal reference requests tolerant of service latency while preserving injected timeouts.
+- Add opt-in child console output for diagnosing failed agent commands.
+- Make checkout example imports work with both pytest entry points in clean CI.
 
 ## 0.2.0 — 2026-10-20
 
