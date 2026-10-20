@@ -12,7 +12,7 @@ Agent 发起下单，服务已经处理，返回结果却丢了。重试会不�
 再从独立接口读取前后状态，生成可以阻止回归的 CI 检查结果。
 Python 是主体，支持 pytest，并已接通官方发布的 DeepSeek Harness 运行时和原生插件。
 
-**当前状态：实验性 v0.2.2 开发工具。** 尚未验证第三方客户、生产适用性或付费需求。
+**当前状态：实验性 v0.2.3 开发工具。** 尚未验证第三方客户、生产适用性或付费需求。
 源码和发行包见 [GitHub](https://github.com/Afr1ste/harness-release-lab/releases)，尚未发布 PyPI。
 
 [![Release contracts](https://github.com/Afr1ste/harness-release-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Afr1ste/harness-release-lab/actions/workflows/ci.yml)

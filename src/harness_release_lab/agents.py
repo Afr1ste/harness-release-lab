@@ -25,7 +25,7 @@ class AgentContext:
 
     @property
     def request_timeout(self) -> float:
-        return 0.2 if "after_timeout" in self.scenario.faults else 3.0
+        return 1.0 if "after_timeout" in self.scenario.faults else 3.0
 
 
 async def reference_agent(context: AgentContext, stable_keys: bool = True) -> AgentResult:

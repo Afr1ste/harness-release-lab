@@ -79,7 +79,7 @@ class World:
                 receipt = row["id"]
                 self.event(con, "deduplicated", attempt=attempt, receipt_id=receipt)
             status = 503 if fault == "after_503" else 200
-            delay = 0.6 if fault == "after_timeout" else 0
+            delay = 2.0 if fault == "after_timeout" else 0
             self.event(
                 con, "response_prepared", attempt=attempt, status=status, delay_ms=int(delay * 1000)
             )

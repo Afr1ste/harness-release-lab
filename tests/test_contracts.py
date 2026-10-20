@@ -37,7 +37,8 @@ def test_controls_and_actual_state(pair):
     assert all(c.checks[-1].passed for c in fixed.cases)
 
 
-def test_normal_concurrent_delivery_tolerates_service_latency(tmp_path, monkeypatch):
+@pytest.mark.parametrize("scenario_id", ["concurrent-delivery", "timeout-after-commit"])
+def test_fixed_delivery_tolerates_service_latency(tmp_path, monkeypatch, scenario_id):
     from harness_release_lab import server
 
     original = server.deliver
@@ -49,7 +50,7 @@ def test_normal_concurrent_delivery_tolerates_service_latency(tmp_path, monkeypa
 
     monkeypatch.setattr(server, "deliver", slower_delivery)
     suite = load_suite()
-    suite.scenarios = [s for s in suite.scenarios if s.id == "concurrent-delivery"]
+    suite.scenarios = [s for s in suite.scenarios if s.id == scenario_id]
     report = run_suite(suite, "reference-fixed", tmp_path)
     assert report.passed, report
     assert len(report.cases[0].effects) == 1

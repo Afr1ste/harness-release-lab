@@ -58,10 +58,10 @@ def test_actual_process_uses_existing_service(tmp_path, mode, passed, count):
 def test_delayed_response_is_drained_before_state_probe(tmp_path):
     with local_server(create_app(tmp_path / "orders.db")) as url:
         report = run_http_contract(
-            contract(faults=[{"at": 1, "type": "after_delay", "delay_ms": 500}]),
+            contract(faults=[{"at": 1, "type": "after_delay", "delay_ms": 2000}]),
             [sys.executable, str(AGENT)],
             tmp_path,
-            env={**os.environ, "HRL_UPSTREAM": url, "HRL_EXAMPLE_TIMEOUT_S": "0.25"},
+            env={**os.environ, "HRL_UPSTREAM": url, "HRL_EXAMPLE_TIMEOUT_S": "1"},
         )
     assert report["passed"], report
     assert report["observations"]["after"]["two-orders"] == 2
