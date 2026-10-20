@@ -10,6 +10,7 @@ from uuid import uuid4
 mode = sys.argv[1] if len(sys.argv) > 1 else "fixed"
 run_id = os.environ["HRL_RUN_ID"]
 opener = build_opener(ProxyHandler({}))
+request_timeout = float(os.environ.get("HRL_EXAMPLE_TIMEOUT_S", "3"))
 for intent in ("order-a", "order-b"):
     for attempt in range(3):
         key = f"{run_id}:{intent}"
@@ -23,7 +24,7 @@ for intent in ("order-a", "order-b"):
             headers={"Content-Type": "application/json", "Idempotency-Key": key},
         )
         try:
-            with opener.open(request, timeout=0.25) as response:
+            with opener.open(request, timeout=request_timeout) as response:
                 json.load(response)
             break
         except HTTPError as exc:

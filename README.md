@@ -14,7 +14,7 @@ gateway and checks **your application's independent before/after state**. Use it
 Python, pytest or CI. DeepSeek Harness is tested through its published SDK and real
 native tools. No live model or API key is needed for the included regression fixtures.
 
-**Status: experimental v0.2.1.** A developer tool, not a production certification
+**Status: experimental v0.2.2.** A developer tool, not a production certification
 or a commercially validated service. Install from this repository or a
 [GitHub release](https://github.com/Afr1ste/harness-release-lab/releases).
 There is no PyPI release.

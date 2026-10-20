@@ -2,7 +2,9 @@ import json
 import os
 import subprocess
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import httpx
@@ -55,10 +57,62 @@ def test_actual_process_uses_existing_service(tmp_path, mode, passed, count):
 
 def test_delayed_response_is_drained_before_state_probe(tmp_path):
     with local_server(create_app(tmp_path / "orders.db")) as url:
-        report = run(tmp_path, url, faults=[{"at": 1, "type": "after_delay", "delay_ms": 500}])
+        report = run_http_contract(
+            contract(faults=[{"at": 1, "type": "after_delay", "delay_ms": 500}]),
+            [sys.executable, str(AGENT)],
+            tmp_path,
+            env={**os.environ, "HRL_UPSTREAM": url, "HRL_EXAMPLE_TIMEOUT_S": "0.25"},
+        )
     assert report["passed"], report
     assert report["observations"]["after"]["two-orders"] == 2
-    assert len([e for e in report["events"] if e["kind"] == "upstream_response"]) == 3
+    # A slow host can cause extra legitimate retries. Verify the contract and
+    # completed requests, not an incidental exact count of physical attempts.
+    requests = {e["attempt"] for e in report["events"] if e["kind"] == "request"}
+    prepared = {e["attempt"] for e in report["events"] if e["kind"] == "response_prepared"}
+    assert 2 <= len(requests) <= 4
+    assert prepared == requests
+    injected = next(e for e in report["events"] if e["kind"] == "injection")
+    finished = next(
+        e for e in report["events"] if e["kind"] == "response_prepared" and e["attempt"] == 1
+    )
+    assert finished["ms"] - injected["ms"] >= 499
+
+
+def test_seal_waits_for_admitted_request_and_rejects_new_requests():
+    app = FastAPI()
+    admitted = threading.Event()
+    release = threading.Event()
+    effects = []
+
+    @app.post("/orders")
+    def order():
+        admitted.set()
+        assert release.wait(timeout=10), "test did not release the admitted request"
+        effects.append("committed")
+        return {"ok": True}
+
+    with local_server(app) as upstream:
+        proxy = FaultProxy(contract(faults=[]), upstream, "a" * 32)
+        with local_server(proxy.app) as url, ThreadPoolExecutor(max_workers=2) as workers:
+            response = workers.submit(httpx.post, url + "/orders", timeout=10, trust_env=False)
+            try:
+                assert admitted.wait(timeout=5)
+                sealing = workers.submit(proxy.seal)
+                deadline = time.monotonic() + 5
+                while not proxy.closed and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                assert proxy.closed
+                assert not sealing.done(), "seal returned while an admitted write was pending"
+                assert not effects
+                rejected = httpx.post(url + "/orders", timeout=5, trust_env=False)
+                assert rejected.status_code == 503
+            finally:
+                release.set()
+            sealing.result(timeout=5)
+            assert response.result(timeout=5).status_code == 200
+            assert effects == ["committed"]
+            assert proxy.active == 0
+            assert any(e["kind"] == "response_prepared" for e in proxy.events)
 
 
 def test_noop_cannot_pass_and_missing_fault_is_visible(tmp_path):

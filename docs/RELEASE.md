@@ -11,8 +11,10 @@ License: MIT. Package name: `harness-release-lab`. No PyPI publication.
 3. Build the wheel and validate its resources. Install it into a fresh environment
    outside the checkout and run both passing and failing pytest contracts.
 4. Push and verify every Windows/Linux, Python 3.11/3.12 Actions job.
-5. Tag only a verified commit; attach the wheel, tracked source archive and SHA256
-   checksums to an experimental GitHub prerelease.
+5. Push a tag for the verified commit and wait for the tag-triggered Actions run
+   to pass all four environments too. Do not publish while that run is pending.
+6. Attach the wheel, tracked source archive and SHA256 checksums to an experimental
+   GitHub prerelease. Never move a published tag to hide a failure; issue a patch release.
 
 Use the [Actions history](https://github.com/Afr1ste/harness-release-lab/actions/workflows/ci.yml)
 and [release page](https://github.com/Afr1ste/harness-release-lab/releases)

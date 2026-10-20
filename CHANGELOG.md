@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.2 — 2026-10-20
+
+- Fix a timing-sensitive test that required exactly three requests, although a fourth
+  retry was within the contract budget and produced the correct two orders.
+- Verify every admitted response is drained, rather than asserting a host-dependent retry count.
+- Add an event-controlled concurrent test: sealing waits for an admitted write and
+  rejects new requests. Repeat both gateway tests five times in CI, failing on any error.
+- Use a 3-second timeout for the ordinary HTTP example; only the injected-timeout
+  regression opts into 250ms through `HRL_EXAMPLE_TIMEOUT_S`.
+- Require the release tag's own CI run to finish before publishing release assets.
+
 ## 0.2.1 — 2026-10-20
 
 - Integrate Pydantic AI's installed Agent, tool execution and ModelRetry path.

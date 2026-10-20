@@ -1,8 +1,10 @@
 # Implementation and acceptance plan
 
-Date: 2026-10-20. Status: v0.2.1 engineering release checks passed.
+Date: 2026-10-20. Current patch: v0.2.2 corrects a timing-sensitive test exposed
+by the v0.2.1 tag run. See `ACCEPTANCE.md` for the failure and fix.
+Both main and tag CI must finish before a new release is published.
 
-## Autonomous release acceptance
+## v0.2.1 main-branch acceptance (historical)
 
 - [x] Exercise the installed Pydantic AI framework's tool/retry path.
 - [x] Detect both duplicate and swallowed orders through independent state.
