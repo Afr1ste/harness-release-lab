@@ -1,0 +1,92 @@
+<!doctype html><html lang="en"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BLOCK · Native DSH · broken</title><style>
+body{font:16px/1.6 system-ui;background:#f5f6f1;color:#183a35;max-width:1100px;margin:40px auto;padding:24px}
+small{letter-spacing:.12em}h1{font-size:40px}table{width:100%;border-collapse:collapse;background:white}
+td{padding:14px;border-bottom:1px solid #ddd}pre{background:#102f2b;color:#dcf0e4;padding:24px;overflow:auto}
+</style><small>HARNESS RELEASE LAB · EXTERNAL HTTP EVIDENCE</small>
+<h1>BLOCK · Native DSH · broken</h1><p>Independent before/after state · 1625 ms</p>
+<table><tr><td>PASS</td><td>evidence_complete</td><td>Expected &#x27;complete&#x27;; observed []</td></tr><tr><td>PASS</td><td>command_completed</td><td>Expected {&#x27;exit_code&#x27;: 0, &#x27;timed_out&#x27;: False}; observed {&#x27;exit_code&#x27;: 0, &#x27;timed_out&#x27;: False}</td></tr><tr><td>PASS</td><td>attempt_budget</td><td>Expected &#x27;1..4&#x27;; observed 3</td></tr><tr><td>PASS</td><td>faults_exercised</td><td>Expected [1]; observed [1]</td></tr><tr><td>BLOCK</td><td>two-orders</td><td>Expected 2; observed 3</td></tr><tr><td>BLOCK</td><td>two-units</td><td>Expected 2; observed 3</td></tr></table><h2>State and transport timeline</h2>
+<p>HTTP success is not proof of commit. The selected state probes determine the effect.
+Only declared probe values and transport metadata are persisted.</p><pre>{
+  &quot;observations&quot;: {
+    &quot;before&quot;: {
+      &quot;two-orders&quot;: 0,
+      &quot;two-units&quot;: 0
+    },
+    &quot;after&quot;: {
+      &quot;two-orders&quot;: 3,
+      &quot;two-units&quot;: 3
+    }
+  },
+  &quot;events&quot;: [
+    {
+      &quot;seq&quot;: 1,
+      &quot;ms&quot;: 1031,
+      &quot;kind&quot;: &quot;request&quot;,
+      &quot;attempt&quot;: 1,
+      &quot;matched&quot;: true,
+      &quot;method&quot;: &quot;POST&quot;
+    },
+    {
+      &quot;seq&quot;: 2,
+      &quot;ms&quot;: 1046,
+      &quot;kind&quot;: &quot;upstream_response&quot;,
+      &quot;attempt&quot;: 1,
+      &quot;status&quot;: 200
+    },
+    {
+      &quot;seq&quot;: 3,
+      &quot;ms&quot;: 1046,
+      &quot;kind&quot;: &quot;injection&quot;,
+      &quot;attempt&quot;: 1,
+      &quot;fault&quot;: &quot;after_503&quot;,
+      &quot;phase&quot;: &quot;after_2xx&quot;
+    },
+    {
+      &quot;seq&quot;: 4,
+      &quot;ms&quot;: 1046,
+      &quot;kind&quot;: &quot;request&quot;,
+      &quot;attempt&quot;: 2,
+      &quot;matched&quot;: true,
+      &quot;method&quot;: &quot;POST&quot;
+    },
+    {
+      &quot;seq&quot;: 5,
+      &quot;ms&quot;: 1062,
+      &quot;kind&quot;: &quot;upstream_response&quot;,
+      &quot;attempt&quot;: 2,
+      &quot;status&quot;: 200
+    },
+    {
+      &quot;seq&quot;: 6,
+      &quot;ms&quot;: 1062,
+      &quot;kind&quot;: &quot;response_prepared&quot;,
+      &quot;attempt&quot;: 2,
+      &quot;status&quot;: 200
+    },
+    {
+      &quot;seq&quot;: 7,
+      &quot;ms&quot;: 1062,
+      &quot;kind&quot;: &quot;request&quot;,
+      &quot;attempt&quot;: 3,
+      &quot;matched&quot;: true,
+      &quot;method&quot;: &quot;POST&quot;
+    },
+    {
+      &quot;seq&quot;: 8,
+      &quot;ms&quot;: 1078,
+      &quot;kind&quot;: &quot;upstream_response&quot;,
+      &quot;attempt&quot;: 3,
+      &quot;status&quot;: 200
+    },
+    {
+      &quot;seq&quot;: 9,
+      &quot;ms&quot;: 1078,
+      &quot;kind&quot;: &quot;response_prepared&quot;,
+      &quot;attempt&quot;: 3,
+      &quot;status&quot;: 200
+    }
+  ]
+}</pre>
+<p>Contract SHA256: 0dac7d2c339ef4872440b14d86af94055a5e1987f4fbc0583bc6863858244444</p></html>

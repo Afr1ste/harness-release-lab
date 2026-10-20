@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "kind": "http-contract",
+  "id": "0bdb55ee60604860bdc1eb80b877697b",
+  "created_at": "2026-10-20T11:59:42.008879+00:00",
+  "name": "Two distinct orders survive a lost acknowledgement",
+  "label": "Python client \u00b7 fixed",
+  "version": "0.2.0",
+  "contract_hash": "0dac7d2c339ef4872440b14d86af94055a5e1987f4fbc0583bc6863858244444",
+  "contract": {
+    "schema_version": 1,
+    "kind": "http",
+    "name": "Two distinct orders survive a lost acknowledgement",
+    "upstream_env": "HRL_UPSTREAM",
+    "method": "POST",
+    "path": "/orders",
+    "observer_path": "/state/{run_id}",
+    "observer_headers_env": {},
+    "probes": [
+      {
+        "id": "two-orders",
+        "pointer": "/orders",
+        "delta": 2,
+        "equals": null
+      },
+      {
+        "id": "two-units",
+        "pointer": "/units",
+        "delta": 2,
+        "equals": null
+      }
+    ],
+    "faults": [
+      {
+        "at": 1,
+        "type": "after_503",
+        "delay_ms": 600
+      }
+    ],
+    "max_attempts": 4,
+    "command_timeout_s": 30.0,
+    "upstream_timeout_s": 5.0,
+    "settle_ms": 0
+  },
+  "passed": true,
+  "evidence_mode": "external-http-state",
+  "checks": [
+    {
+      "name": "evidence_complete",
+      "passed": true,
+      "expected": "complete",
+      "actual": []
+    },
+    {
+      "name": "command_completed",
+      "passed": true,
+      "expected": {
+        "exit_code": 0,
+        "timed_out": false
+      },
+      "actual": {
+        "exit_code": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "name": "attempt_budget",
+      "passed": true,
+      "expected": "1..4",
+      "actual": 3
+    },
+    {
+      "name": "faults_exercised",
+      "passed": true,
+      "expected": [
+        1
+      ],
+      "actual": [
+        1
+      ]
+    },
+    {
+      "name": "two-orders",
+      "passed": true,
+      "expected": 2,
+      "actual": 2
+    },
+    {
+      "name": "two-units",
+      "passed": true,
+      "expected": 2,
+      "actual": 2
+    }
+  ],
+  "observations": {
+    "before": {
+      "two-orders": 0,
+      "two-units": 0
+    },
+    "after": {
+      "two-orders": 2,
+      "two-units": 2
+    }
+  },
+  "events": [
+    {
+      "seq": 1,
+      "ms": 1032,
+      "kind": "request",
+      "attempt": 1,
+      "matched": true,
+      "method": "POST"
+    },
+    {
+      "seq": 2,
+      "ms": 1047,
+      "kind": "upstream_response",
+      "attempt": 1,
+      "status": 200
+    },
+    {
+      "seq": 3,
+      "ms": 1047,
+      "kind": "injection",
+      "attempt": 1,
+      "fault": "after_503",
+      "phase": "after_2xx"
+    },
+    {
+      "seq": 4,
+      "ms": 1047,
+      "kind": "request",
+      "attempt": 2,
+      "matched": true,
+      "method": "POST"
+    },
+    {
+      "seq": 5,
+      "ms": 1047,
+      "kind": "upstream_response",
+      "attempt": 2,
+      "status": 200
+    },
+    {
+      "seq": 6,
+      "ms": 1047,
+      "kind": "response_prepared",
+      "attempt": 2,
+      "status": 200
+    },
+    {
+      "seq": 7,
+      "ms": 1047,
+      "kind": "request",
+      "attempt": 3,
+      "matched": true,
+      "method": "POST"
+    },
+    {
+      "seq": 8,
+      "ms": 1063,
+      "kind": "upstream_response",
+      "attempt": 3,
+      "status": 200
+    },
+    {
+      "seq": 9,
+      "ms": 1063,
+      "kind": "response_prepared",
+      "attempt": 3,
+      "status": 200
+    }
+  ],
+  "duration_ms": 1547,
+  "environment": {
+    "python": "3.12.9",
+    "platform": "Windows",
+    "engine_sha256": "764949aaa9938d4243e4f6a2bae783469b8a7bd3e668d21b4a3733d5a8b74637"
+  },
+  "command_sha256": "82c34bd38845564c30d2dbd5d069ad3c3819dd089b1f95fb2c996040f510a8a6"
+}

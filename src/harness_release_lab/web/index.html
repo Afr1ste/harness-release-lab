@@ -14,10 +14,10 @@
 <div class="layout">
 <aside>
   <div class="brand"><span class="mark">⌁</span><div>Harness Lab<small>RELEASE ENGINEERING</small></div></div>
-  <div><p class="navlabel">Workspace</p><div class="navitem">Release evidence <span>↗</span></div></div>
+  <div><p class="navlabel">Workspace</p><div class="navitem">Reference controls <span>↗</span></div><p id="httpNav"><a href="/http" style="color:#cce3cd">HTTP release evidence ↗</a></p></div>
   <div class="sidebox"><strong>What actually changed?</strong><br>Run the same contract against two implementations. Inspect the business state before you ship.</div>
   <div class="sidebox"><p class="navlabel">Evidence layers</p>01 &nbsp; Runtime response<br>02 &nbsp; Tool execution<br>03 &nbsp; Durable business state</div>
-  <div class="sidebar-footer"><span class="dot"></span> Local test environment<br>Python core · DeepSeek Harness<br>v0.1 · No provider key required</div>
+  <div class="sidebar-footer"><span class="dot"></span> Local test environment<br>Python core · DeepSeek Harness<br>v0.2 · No provider key required</div>
 </aside>
 <main>
   <div class="topline"><span>Workspace / <strong>Release gates</strong></span><span class="chip" id="modeChip">Local workspace</span></div>
@@ -111,7 +111,7 @@ document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click'
 $('runButton').addEventListener('click',start);
 $('runSelect').addEventListener('change',async()=>{try{renderReport(await api('/api/runs/'+$('runSelect').value));}catch(e){notice(e.message,true);}});
 $('compareButton').addEventListener('click',async()=>{try{if(!report)throw new Error('Run a suite first.');const c=await api('/api/compare?baseline='+encodeURIComponent($('baseline').value)+'&candidate='+encodeURIComponent(report.id));const el=$('comparison');el.replaceChildren();el.append(node('strong',c.release_allowed?'Candidate meets all release contracts':'Candidate does not meet release contracts',c.release_allowed?'ok':'fail'));el.append(node('p',c.baseline_passed+' → '+c.candidate_passed_count+' / '+c.total+' contracts · '+c.improvements.length+' improvements · '+c.regressions.length+' regressions'));if(c.regressions.length)el.append(node('p','Regressions: '+c.regressions.join(', ')));el.classList.remove('hidden');}catch(e){notice(e.message,true);}});
-if(embedded){$('controls').classList.add('hidden');$('runButton').classList.add('hidden');$('compareControls').classList.add('hidden');renderReport(embedded);}
+if(embedded){$('httpNav').classList.add('hidden');$('controls').classList.add('hidden');$('runButton').classList.add('hidden');$('compareControls').classList.add('hidden');renderReport(embedded);}
 else refresh().catch(e=>notice(e.message,true));
 </script>
 </body></html>

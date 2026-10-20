@@ -1,6 +1,18 @@
 # Implementation and acceptance plan
 
-Date: 2026-10-20. Status: local acceptance candidate complete.
+Date: 2026-10-20. Status: v0.2 local release candidate complete.
+
+## v0.2 response to the commercial-value review
+
+- [x] Audit closest competitors at pinned commits and state actual overlap.
+- [x] Add real-service HTTP faults, independent state probes and command deadlines.
+- [x] Integrate with pytest and verify duplicate and over-deduplicated orders.
+- [x] Run an application-owned order tool through the published DSH runtime.
+- [x] Add HTTP evidence, comparisons, read-only UI and integration documentation.
+- [x] Complete error-path, native-runtime, UI and clean-wheel acceptance.
+- [x] Prepare current evidence, release notes and versioned source for review.
+
+Third-party adoption and commercial demand require external validation.
 
 ## Product decision
 

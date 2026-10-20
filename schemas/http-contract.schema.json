@@ -1,0 +1,201 @@
+{
+  "$defs": {
+    "Injection": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "At",
+          "type": "integer"
+        },
+        "type": {
+          "enum": [
+            "before_429",
+            "before_503",
+            "before_403",
+            "after_503",
+            "after_delay"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "delay_ms": {
+          "default": 600,
+          "maximum": 5000,
+          "minimum": 1,
+          "title": "Delay Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "type"
+      ],
+      "title": "Injection",
+      "type": "object"
+    },
+    "Probe": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "pointer": {
+          "maxLength": 300,
+          "pattern": "^(|/.*)$",
+          "title": "Pointer",
+          "type": "string"
+        },
+        "delta": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Delta"
+        },
+        "equals": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Equals"
+        }
+      },
+      "required": [
+        "id",
+        "pointer"
+      ],
+      "title": "Probe",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "http",
+      "default": "http",
+      "title": "Kind",
+      "type": "string"
+    },
+    "name": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "upstream_env": {
+      "default": "HRL_UPSTREAM",
+      "pattern": "^[A-Z][A-Z0-9_]*$",
+      "title": "Upstream Env",
+      "type": "string"
+    },
+    "method": {
+      "default": "POST",
+      "enum": [
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE"
+      ],
+      "title": "Method",
+      "type": "string"
+    },
+    "path": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Path",
+      "type": "string"
+    },
+    "observer_path": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Observer Path",
+      "type": "string"
+    },
+    "observer_headers_env": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Observer Headers Env",
+      "type": "object"
+    },
+    "probes": {
+      "items": {
+        "$ref": "#/$defs/Probe"
+      },
+      "maxItems": 30,
+      "minItems": 1,
+      "title": "Probes",
+      "type": "array"
+    },
+    "faults": {
+      "items": {
+        "$ref": "#/$defs/Injection"
+      },
+      "maxItems": 30,
+      "title": "Faults",
+      "type": "array"
+    },
+    "max_attempts": {
+      "default": 3,
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Max Attempts",
+      "type": "integer"
+    },
+    "command_timeout_s": {
+      "default": 30.0,
+      "exclusiveMinimum": 0,
+      "maximum": 600,
+      "title": "Command Timeout S",
+      "type": "number"
+    },
+    "upstream_timeout_s": {
+      "default": 5.0,
+      "exclusiveMinimum": 0,
+      "maximum": 30,
+      "title": "Upstream Timeout S",
+      "type": "number"
+    },
+    "settle_ms": {
+      "default": 0,
+      "maximum": 5000,
+      "minimum": 0,
+      "title": "Settle Ms",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "name",
+    "path",
+    "observer_path",
+    "probes"
+  ],
+  "title": "HttpContract",
+  "type": "object"
+}

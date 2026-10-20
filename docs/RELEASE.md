@@ -1,9 +1,9 @@
-# Release package — not published
+# v0.2 release package — not published
 
 ## Repository metadata
 
 - Name: `harness-release-lab` (availability not reserved)
-- Description: Python-first release gates for tool-using agents. Real DeepSeek Harness integration, fault injection, and durable business-state evidence.
+- Description: Test existing Python agents and DSH tools against HTTP services. Independent state contracts, pytest and CI evidence.
 - Topics: `dsh-plugin`, `deepseek-harness`, `agent-testing`, `python`, `reliability`,
   `fault-injection`, `developer-tools`
 - License: MIT
@@ -13,13 +13,16 @@
 We built Harness Release Lab to test a specific agent failure:
 a business write commits, its response disappears, and a retry duplicates the work.
 
-It runs state-based contracts through the published DeepSeek Harness runtime,
-supports Python adapters and native DSH patches, and exports offline evidence plus
-JUnit for CI. The zero-key demo includes deliberately broken and corrected controls.
+It runs existing agent commands against your HTTP tool service, injects bounded
+failures and reads independent state. Use the CLI or pytest fixture and export
+HTML/JSON/JUnit/Markdown evidence. A native DSH order plugin example catches both
+duplicate writes and over-broad idempotency keys that swallow legitimate operations.
 
 The model is scripted in the demo, so these are reproducible orchestration tests,
 not claims about model intelligence. We'd especially value feedback from maintainers
-who want to test a real plugin change against the same contract.
+who want to test their own tool changes against a business contract.
+Existing products already provide fault injection and state contracts. This is an
+experimental Python/DSH integration tool, not production certification or validated demand.
 
 ## Publication checklist
 

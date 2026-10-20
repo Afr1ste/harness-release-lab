@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html
 import re
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
@@ -11,6 +12,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 
 from .engine import compare, read_report, run_suite
+from .http_runner import read_http_report
 from .models import StrictModel
 from .scenarios import load_suite
 
@@ -59,6 +61,56 @@ def create_app(root: Path) -> FastAPI:
     @app.get("/", response_class=HTMLResponse)
     def index():
         return (Path(__file__).parent / "web" / "index.html").read_text(encoding="utf-8")
+
+    @app.get("/http", response_class=HTMLResponse)
+    def http_history():
+        records = []
+        for path in (root / "http").glob("*/report.json"):
+            if not re.fullmatch(r"[a-f0-9]{32}", path.parent.name):
+                continue
+            try:
+                report = read_http_report(path)
+                records.append((str(report["created_at"]), path.parent.name, report))
+            except (ValueError, OSError, KeyError, TypeError):
+                continue
+        rows = []
+        for created, run_id, report in sorted(records, reverse=True)[:200]:
+            rows.append(
+                f"<tr><td>{'PASS' if report['passed'] else 'BLOCK'}</td>"
+                f'<td><a href="/http/{run_id}">'
+                f"{html.escape(str(report.get('label') or report['name']))}</a></td>"
+                f"<td>{html.escape(created)}</td></tr>"
+            )
+        return (
+            '<!doctype html><html lang="en"><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width,initial-scale=1">'
+            "<title>HTTP release evidence · Harness Lab</title>"
+            "<style>body{font:16px/1.7 system-ui;max-width:1100px;margin:50px auto;padding:24px;"
+            "background:#f5f6f1;color:#183a35}table{width:100%;background:white;border-collapse:"
+            "collapse}td{padding:18px;border-bottom:1px solid #ddd}a{color:#15634c}</style>"
+            '<a href="/">← Reference controls</a><h1>HTTP release evidence</h1>'
+            "<p>Existing agent commands · independent service state · explicit release contracts</p>"
+            f"<table>{''.join(rows)}</table>"
+            "<p>Generate evidence with <code>hrl check contract.yaml -- your-agent-command</code>."
+            " Only local CLI commands can launch external agents.</p></html>"
+        )
+
+    @app.get("/http/{run_id}", response_class=HTMLResponse)
+    def http_evidence(run_id: str):
+        if not re.fullmatch(r"[a-f0-9]{32}", run_id):
+            raise HTTPException(404, "unknown HTTP run")
+        path = root / "http" / run_id / "report.json"
+        try:
+            read_http_report(path)
+            content = path.with_suffix(".html").read_text(encoding="utf-8")
+        except (ValueError, OSError, KeyError, TypeError):
+            raise HTTPException(404, "invalid HTTP evidence") from None
+        return HTMLResponse(
+            content,
+            headers={
+                "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+            },
+        )
 
     @app.get("/api/runs")
     def runs():

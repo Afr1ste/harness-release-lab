@@ -1,20 +1,84 @@
 # Harness Release Lab
 
-**A release gate for agents that write to the world.**
+**Test your agent's business writes before shipping a retry or plugin change.**
 
 [中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) ·
-[Product thesis](docs/PRODUCT.md) · [Acceptance evidence](docs/ACCEPTANCE.md)
+[Connect your service](docs/HTTP_GUIDE.md) · [Competitive review](docs/COMPETITIVE_REVIEW.md) ·
+[Acceptance evidence](docs/ACCEPTANCE.md)
 
-An agent creates a refund. The write commits. The response times out.
-The agent retries. Did it create one refund or two?
+Your agent sends an order. The service processes it. The response is lost.
+The agent retries. Did it create two orders? Did the fix accidentally swallow the next order?
 
-Harness Release Lab answers that question using **durable business state**, then
-turns the answer into a reproducible release gate. Run the same contract against
-two implementations, inspect the evidence, and block a regressing candidate.
+Harness Release Lab runs **your existing agent command** through a bounded HTTP fault
+gateway and checks **your application's independent before/after state**. Use it from
+Python, pytest or CI. DeepSeek Harness is tested through its published SDK and real
+native tools. No live model or API key is needed for the included regression fixtures.
+
+**Status: experimental v0.2.** A developer tool with verified local integration,
+not a production certification or a commercially validated service. Source installation
+only; no PyPI package or public release has been published yet.
+
+## Try the application integration
+
+From a checkout, with Python 3.11+:
+
+```sh
+python -m pip install -e .
+python -m examples.http.verify
+hrl serve
+```
+
+Open [HTTP release evidence](http://127.0.0.1:8787/http).
+
+![Existing client and native DSH contract results](docs/assets/http-history.png)
+
+| Real client + separate order service | Orders requested | Orders created | Gate |
+|---|---:|---:|---|
+| Stable key per intent | 2 | 2 | PASS |
+| New key on every retry | 2 | 3 | BLOCK |
+| One key reused across intents | 2 | 1 | BLOCK |
+
+Run the same integration with an application-owned native DSH tool:
+
+```sh
+python -m pip install -e ".[dsh]"
+python -m examples.http.verify --dsh
+```
+
+The model fixture controls tool selection and retry decisions; it does not prove
+live-model judgment. The runtime, plugin, process, HTTP service and database are real.
+
+## Bring your existing agent
+
+Start a disposable instance of your tool service. Set `HRL_UPSTREAM` to its origin.
+Configure your agent's tool base URL from `HRL_PROXY_URL`, and isolate its test data
+using `HRL_RUN_ID` or a fresh database.
+
+```sh
+hrl check contracts/orders.yaml -- python tests/run_existing_agent.py
+```
+
+The YAML names the fault boundary, independent state endpoint and expected deltas.
+The runner does not replace your business service or require an MCP server.
+See the [complete contract and pytest recipe](docs/HTTP_GUIDE.md).
+
+Each run produces JSON, standalone HTML, JUnit and a Markdown summary. Missing
+observations, ignored faults, no-op commands, excessive retries and timeouts block
+the gate. Selected state values are saved; raw traffic and credentials are not.
+
+## Why choose it?
+
+Use it when your team works in Python/pytest and wants a small executable test of
+business effects, especially around DSH plugin changes. Existing tools already provide
+fault injection and state contracts. Our current distinction is this integration path,
+not a new category or a demonstrated moat. [The source-based comparison](docs/COMPETITIVE_REVIEW.md)
+states where alternatives are broader and what is still unproven.
+
+## Explore the original reference controls
 
 ![Release evidence dashboard](docs/assets/dashboard.png)
 
-## Start in three commands
+### Refund reference demo
 
 From a checkout, with Python 3.11+:
 
@@ -33,7 +97,7 @@ The demo runs two deterministic reference adapters. The deliberately flawed adap
 passes 4/8 contracts; the corrected one passes 8/8. The failures expose repeated
 business writes after lost acknowledgements and duplicate deliveries.
 
-## Exercise the real DeepSeek Harness
+### Exercise the real DeepSeek Harness
 
 ```sh
 python -m pip install -e ".[dsh]"
@@ -129,10 +193,10 @@ on a small release workflow: **Python adapters + actual DSH composition + state-
 contracts + inspectable CI evidence**. It complements observability tools; it does
 not replace a production monitoring or evaluation platform.
 
-The first business simulator is intentionally narrow: a refund receipt API with
-an atomic idempotency ledger. Real service semantics require an adapter and an
-independent before/after observer; arbitrary production APIs are not supported
-automatically. See [scope and tradeoffs](docs/ARCHITECTURE.md).
+The original refund simulator remains a reference control. The v0.2 HTTP path tests
+your own service, but requires a configurable endpoint, isolated test data and a
+meaningful state observer. It does not automatically discover business correctness.
+See [scope and tradeoffs](docs/HTTP_GUIDE.md#limits-you-must-account-for).
 
 ## Development
 

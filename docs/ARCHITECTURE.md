@@ -1,5 +1,26 @@
 # Architecture and tradeoffs
 
+## v0.2 external HTTP path
+
+```text
+existing agent command → fault gateway → application's HTTP service
+                             │                       │
+                             └── metadata            └── independent before/after state
+```
+
+`http_contract.py` validates YAML and JSON Pointers. `http_proxy.py` matches physical
+method/path occurrences, injects bounded failures and never labels HTTP 2xx a commit.
+`http_runner.py` owns child deadlines, independent observations and reports.
+`pytest_plugin.py` exposes the same runner as a fixture.
+
+This path assumes no refund schema, database table or adapter return value. The order
+example has an independent service and both an ordinary Python client and a DSH plugin.
+The process is trusted, not sandboxed. Admission closes and admitted requests drain
+before state observation. This does not prove eventual workflow completion; see
+[HTTP limits](HTTP_GUIDE.md).
+
+## Original reference engine
+
 ## Runtime path
 
 ```mermaid

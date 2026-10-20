@@ -1,0 +1,15 @@
+# Changelog
+
+## 0.2.0 — 2026-10-20
+
+- Test existing executable agents against an HTTP tool service with YAML contracts.
+- Add independent state probes, bounded fault gateway, process deadlines and pytest fixture.
+- Detect both duplicated writes and swallowed distinct intents in an independent order service.
+- Verify an application-owned native DSH order plugin through the published runtime.
+- Add external HTTP HTML/JSON/JUnit/Markdown evidence, CLI comparison and read-only history.
+- Document the competitive overlap, integration requirements and limits.
+
+## 0.1.0 — 2026-10-20
+
+- Initial refund controls, real DSH orchestration, local dashboard and release evidence.
+- Local prototype; not published to a registry.

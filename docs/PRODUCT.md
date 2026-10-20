@@ -2,6 +2,10 @@
 
 Research date: 2026-10-20.
 
+**Revised after source audit:** use [COMPETITIVE_REVIEW.md](COMPETITIVE_REVIEW.md)
+for the current v0.2 decision, pinned competitor sources and commercial validation plan.
+Existing HTTP agents now have an integration path in [HTTP_GUIDE.md](HTTP_GUIDE.md).
+
 ## User and purchase hypothesis
 
 Initial user: a DSH plugin maintainer or an Agent platform engineer who repeatedly

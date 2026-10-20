@@ -1,0 +1,18 @@
+schema_version: 1
+kind: http
+name: Two distinct orders survive a lost acknowledgement
+upstream_env: HRL_UPSTREAM
+method: POST
+path: /orders
+observer_path: /state/{run_id}
+max_attempts: 4
+faults:
+  - at: 1
+    type: after_503
+probes:
+  - id: two-orders
+    pointer: /orders
+    delta: 2
+  - id: two-units
+    pointer: /units
+    delta: 2
