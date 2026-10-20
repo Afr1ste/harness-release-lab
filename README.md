@@ -14,15 +14,20 @@ gateway and checks **your application's independent before/after state**. Use it
 Python, pytest or CI. DeepSeek Harness is tested through its published SDK and real
 native tools. No live model or API key is needed for the included regression fixtures.
 
-**Status: experimental v0.2.** A developer tool with verified local integration,
-not a production certification or a commercially validated service. Source installation
-only; no PyPI package or public release has been published yet.
+**Status: experimental v0.2.1.** A developer tool, not a production certification
+or a commercially validated service. Install from this repository or a
+[GitHub release](https://github.com/Afr1ste/harness-release-lab/releases).
+There is no PyPI release.
+
+[![Release contracts](https://github.com/Afr1ste/harness-release-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Afr1ste/harness-release-lab/actions/workflows/ci.yml)
 
 ## Try the application integration
 
 From a checkout, with Python 3.11+:
 
 ```sh
+git clone https://github.com/Afr1ste/harness-release-lab.git
+cd harness-release-lab
 python -m pip install -e .
 python -m examples.http.verify
 hrl serve
@@ -47,6 +52,17 @@ python -m examples.http.verify --dsh
 
 The model fixture controls tool selection and retry decisions; it does not prove
 live-model judgment. The runtime, plugin, process, HTTP service and database are real.
+
+### Pydantic AI
+
+```sh
+python -m pip install -e ".[pydantic-ai]"
+python -m examples.http.verify --pydantic-ai
+```
+
+This uses the installed framework's Agent and ModelRetry path. All three variants
+finish successfully; independent state checks catch duplicated and swallowed orders.
+See the [integration evidence and scope](docs/PYDANTIC_AI.md).
 
 ## Bring your existing agent
 

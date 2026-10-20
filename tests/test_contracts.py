@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 import httpx
@@ -34,6 +35,24 @@ def test_controls_and_actual_state(pair):
     assert next(c for c in broken.cases if c.scenario.id == "lost-ack-twice").effects.__len__() == 3
     assert all(c.passed for c in fixed.cases)
     assert all(c.checks[-1].passed for c in fixed.cases)
+
+
+def test_normal_concurrent_delivery_tolerates_service_latency(tmp_path, monkeypatch):
+    from harness_release_lab import server
+
+    original = server.deliver
+
+    def slower_delivery(*args):
+        result = original(*args)
+        time.sleep(0.3)
+        return result
+
+    monkeypatch.setattr(server, "deliver", slower_delivery)
+    suite = load_suite()
+    suite.scenarios = [s for s in suite.scenarios if s.id == "concurrent-delivery"]
+    report = run_suite(suite, "reference-fixed", tmp_path)
+    assert report.passed, report
+    assert len(report.cases[0].effects) == 1
 
 
 def test_compare_detects_regressions_in_both_directions(pair):

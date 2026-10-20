@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "harness-release-lab"
-version = "0.2.0"
+version = "0.2.1"
 description = "State-based release gates for tool-using agents. Reproduce ambiguous writes before shipping."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -17,9 +17,14 @@ dependencies = [
   "PyYAML>=6,<7",
 ]
 
+[project.urls]
+Repository = "https://github.com/Afr1ste/harness-release-lab"
+Issues = "https://github.com/Afr1ste/harness-release-lab/issues"
+
 [project.optional-dependencies]
 dev = ["pytest>=8,<10", "ruff>=0.11,<1"]
 dsh = ["deepseek-harness-sdk==0.2.1rc2"]
+pydantic-ai = ["pydantic-ai-slim==2.58.0"]
 
 [project.scripts]
 hrl = "harness_release_lab.cli:main"

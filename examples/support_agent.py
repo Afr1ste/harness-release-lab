@@ -35,7 +35,7 @@ async def run(context: AgentContext) -> AgentResult:
                 continue
         return "failed"
 
-    async with httpx.AsyncClient(timeout=0.2, trust_env=False) as client:
+    async with httpx.AsyncClient(timeout=context.request_timeout, trust_env=False) as client:
         if context.scenario.concurrent_calls > 1:
             outcomes = await asyncio.gather(
                 *(deliver(client) for _ in range(context.scenario.concurrent_calls))

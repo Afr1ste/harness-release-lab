@@ -189,8 +189,10 @@ Contracts and probe IDs must also avoid secrets.
 - The gateway supports bounded ordinary HTTP responses, not SSE/WebSocket/gRPC or
   transparent binary streaming. It caps request/response bodies at 2 MiB, total
   requests at 200 and recorded events at 500. Overflow blocks the gate.
-- Command stdout/stderr are discarded to prevent accidental credential publication.
-  Debug an unsuccessful command locally or use your own controlled application logs.
+- Command stdout/stderr are discarded by default. For local diagnosis, use
+  `hrl check --show-agent-output contract.yaml -- ...` or `show_output=True` in
+  the Python API. Output goes directly to the console, not the report. Your CI may
+  capture that console output, so enable it only with appropriate test data.
 - A malicious agent with the upstream origin/environment can bypass the gateway.
   State probes may catch resulting changes, but no network containment is promised.
 - State measurements need authoritative reads and isolated test data. Equal counters

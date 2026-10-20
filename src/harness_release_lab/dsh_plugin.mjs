@@ -40,7 +40,7 @@ export function apply(ctx, config) {
             'Idempotency-Key': args.operation_key,
           },
           body: JSON.stringify({ order_id: args.order_id, amount_cents: args.amount_cents }),
-          signal: AbortSignal.any([exec.signal, AbortSignal.timeout(200)]),
+          signal: AbortSignal.any([exec.signal, AbortSignal.timeout(config.timeoutMs)]),
         });
         return { http_status: response.status, body: await response.text() };
       } catch (error) {

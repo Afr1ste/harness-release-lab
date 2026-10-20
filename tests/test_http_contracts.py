@@ -25,12 +25,13 @@ def contract(**overrides):
     return HttpContract.model_validate({**data, **overrides})
 
 
-def run(tmp_path, url, command=None, **changes):
+def run(tmp_path, url, command=None, *, show_output=False, **changes):
     return run_http_contract(
         contract(**changes),
         command or [sys.executable, str(AGENT)],
         tmp_path,
         env={**os.environ, "HRL_UPSTREAM": url},
+        show_output=show_output,
     )
 
 
@@ -245,7 +246,12 @@ def test_pytest_fixture(hrl_http, tmp_path):
 def test_application_owned_tool_in_real_dsh(tmp_path, mode, passed, count):
     pytest.importorskip("deepseek_harness")
     with local_server(create_app(tmp_path / "orders.db")) as url:
-        report = run(tmp_path, url, [sys.executable, str(AGENT.with_name("dsh_agent.py")), mode])
+        report = run(
+            tmp_path,
+            url,
+            [sys.executable, str(AGENT.with_name("dsh_agent.py")), mode],
+            show_output=True,
+        )
     assert report["passed"] is passed, report
     assert report["observations"]["after"]["two-orders"] == count, report
     assert next(c for c in report["checks"] if c["name"] == "command_completed")["passed"]

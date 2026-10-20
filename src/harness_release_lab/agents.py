@@ -23,9 +23,13 @@ class AgentContext:
     def operation_key(self) -> str:
         return f"refund:{self.scenario.operation.order_id}"
 
+    @property
+    def request_timeout(self) -> float:
+        return 0.2 if "after_timeout" in self.scenario.faults else 3.0
+
 
 async def reference_agent(context: AgentContext, stable_keys: bool = True) -> AgentResult:
-    async with httpx.AsyncClient(timeout=0.2, trust_env=False) as client:
+    async with httpx.AsyncClient(timeout=context.request_timeout, trust_env=False) as client:
 
         async def attempt():
             key = context.operation_key() if stable_keys else str(uuid4())

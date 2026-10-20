@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 — 2026-10-20
+
+- Integrate Pydantic AI's installed Agent, tool execution and ModelRetry path.
+- Verify that final-response success can coexist with duplicate or missing business effects.
+- Pin the optional integration dependency and exercise it in the CI matrix.
+
 ## 0.2.0 — 2026-10-20
 
 - Test existing executable agents against an HTTP tool service with YAML contracts.

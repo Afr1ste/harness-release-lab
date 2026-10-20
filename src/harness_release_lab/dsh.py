@@ -154,7 +154,11 @@ def run_dsh(context: AgentContext, stable_keys: bool) -> AgentResult:
                         {
                             "id": "harness-release-lab",
                             "name": plugin.as_uri(),
-                            "config": {"endpoint": context.base_url, "token": context.token},
+                            "config": {
+                                "endpoint": context.base_url,
+                                "token": context.token,
+                                "timeoutMs": round(context.request_timeout * 1000),
+                            },
                         }
                     ]
                 }

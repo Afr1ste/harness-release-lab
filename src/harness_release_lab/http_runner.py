@@ -63,7 +63,7 @@ def stop_process(process):
     process.wait(timeout=5)
 
 
-def execute_command(command, env, cwd, timeout):
+def execute_command(command, env, cwd, timeout, show_output=False):
     options = (
         {"creationflags": subprocess.CREATE_NO_WINDOW}
         if os.name == "nt"
@@ -75,8 +75,8 @@ def execute_command(command, env, cwd, timeout):
         env=env,
         shell=False,
         stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        stdout=None if show_output else subprocess.DEVNULL,
+        stderr=None if show_output else subprocess.DEVNULL,
         **options,
     )
     try:
@@ -97,6 +97,7 @@ def run_http_contract(
     cwd: Path | None = None,
     env: dict[str, str] | None = None,
     label: str = "",
+    show_output: bool = False,
 ) -> dict:
     """Public Python API, also usable from pytest. Explicit env replaces inherited env."""
     if not command or any(not isinstance(arg, str) or not arg for arg in command):
@@ -123,7 +124,9 @@ def run_http_contract(
         observations["before"] = observe(contract, upstream, run_id, environment)
         with local_server(proxy.app) as endpoint:
             child_env = {**environment, "HRL_PROXY_URL": endpoint, "HRL_RUN_ID": run_id}
-            process_result = execute_command(command, child_env, cwd, contract.command_timeout_s)
+            process_result = execute_command(
+                command, child_env, cwd, contract.command_timeout_s, show_output=show_output
+            )
             proxy.seal()
         if contract.settle_ms:
             time.sleep(contract.settle_ms / 1000)

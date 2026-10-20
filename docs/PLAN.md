@@ -1,6 +1,15 @@
 # Implementation and acceptance plan
 
-Date: 2026-10-20. Status: v0.2 local release candidate complete.
+Date: 2026-10-20. Status: v0.2.1 public release validation in progress.
+
+## Autonomous release acceptance
+
+- [x] Exercise the installed Pydantic AI framework's tool/retry path.
+- [x] Detect both duplicate and swallowed orders through independent state.
+- [x] Fix false blocks from the reference fixture's normal-request deadline.
+- [x] Pass 66 local tests, including a deliberately slow concurrent service.
+- [ ] Pass Windows/Linux and Python 3.11/3.12 on public GitHub Actions.
+- [ ] Verify a clean installed wheel and publish an experimental release.
 
 ## v0.2 response to the commercial-value review
 
@@ -42,7 +51,7 @@ The project must earn validation; stars and revenue are outcomes, not acceptance
 The local scripted model checks orchestration contracts, not real-model intelligence,
 prompt quality, or production reliability. A green script is not a model benchmark.
 The mock business service is a test environment, not a payment system or sandbox for
-untrusted code. No credentials, paid API requests or public publishing are needed.
+untrusted code. Included fixtures require no provider credentials or paid API requests.
 No claim of novelty: competing fault injection, replay and evaluation tools exist.
 
 ## Acceptance
@@ -59,7 +68,7 @@ No claim of novelty: competing fault injection, replay and evaluation tools exis
 9. Unit/integration tests exercise error paths, concurrent writes, restart persistence,
    malformed inputs and comparison validity.
 10. README, architecture/tradeoffs, competitive evidence, demo and release materials
-    are ready for review. Public publication happens only after concrete review.
+    are ready for review. Public publication includes remote CI verification.
 
 ## Milestones
 
@@ -71,5 +80,5 @@ No claim of novelty: competing fault injection, replay and evaluation tools exis
 - [x] Test, installation and browser verification.
 - [x] Release and acceptance package.
 
-See `ACCEPTANCE.md` for actual evidence and limitations. Public publication,
-customer validation and star growth remain separate post-review work.
+See `ACCEPTANCE.md` for actual evidence and limitations. Customer validation
+and star growth remain separate from engineering release acceptance.

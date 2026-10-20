@@ -2,9 +2,14 @@ name: Release contracts
 on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
+concurrency:
+  group: contracts-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   contracts:
+    timeout-minutes: 15
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         python: ["3.11", "3.12"]
@@ -14,20 +19,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - run: python -m pip install -e ".[dev,dsh]"
+      - run: python -m pip install -e ".[dev,dsh,pydantic-ai]"
       - run: ruff check src tests examples scripts
       - run: ruff format --check src tests examples scripts
       - run: pytest -q --junitxml=.lab/test-results.xml
       - run: hrl demo --dsh
       - run: python -m examples.http.verify
       - run: python -m examples.http.verify --dsh
+      - run: python -m examples.http.verify --pydantic-ai
       - run: python -m pip wheel . --no-deps --wheel-dir dist
-      - run: python scripts/verify_package.py dist/harness_release_lab-0.2.0-py3-none-any.whl
-      - run: python scripts/check_wheel_install.py dist/harness_release_lab-0.2.0-py3-none-any.whl
+      - run: python scripts/verify_package.py dist/harness_release_lab-0.2.1-py3-none-any.whl
+      - run: python scripts/check_wheel_install.py dist/harness_release_lab-0.2.1-py3-none-any.whl
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: release-evidence-${{ matrix.os }}-${{ matrix.python }}
+          retention-days: 7
           path: |
             .lab/runs/*/report.json
             .lab/runs/*/report.html

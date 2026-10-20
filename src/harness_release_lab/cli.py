@@ -37,6 +37,9 @@ def main():
         "check", help="test an existing agent against its HTTP tool service"
     )
     check.add_argument("--label", default="", help="candidate version or experiment name")
+    check.add_argument(
+        "--show-agent-output", action="store_true", help="show child output for local debugging"
+    )
     check.add_argument("contract", type=Path)
     check.add_argument("argv", nargs=argparse.REMAINDER, help="-- executable arguments")
     schema = commands.add_parser("schema", help="export the HTTP contract JSON Schema")
@@ -55,7 +58,11 @@ def main():
 
             argv = args.argv[1:] if args.argv[:1] == ["--"] else args.argv
             report = run_http_contract(
-                load_http_contract(args.contract), argv, args.root, label=args.label
+                load_http_contract(args.contract),
+                argv,
+                args.root,
+                label=args.label,
+                show_output=args.show_agent_output,
             )
             print(f"{'PASS' if report['passed'] else 'BLOCK'} {report['name']}")
             for item in report["checks"]:

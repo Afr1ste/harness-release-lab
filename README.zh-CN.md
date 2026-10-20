@@ -12,14 +12,18 @@ Agent 发起下单，服务已经处理，返回结果却丢了。重试会不�
 再从独立接口读取前后状态，生成可以阻止回归的 CI 检查结果。
 Python 是主体，支持 pytest，并已接通官方发布的 DeepSeek Harness 运行时和原生插件。
 
-**当前状态：实验性 v0.2 开发工具。** 已验证本地工作链路，尚未验证第三方客户、
-生产适用性或付费需求。还未公开发布到 GitHub / PyPI。
+**当前状态：实验性 v0.2.1 开发工具。** 尚未验证第三方客户、生产适用性或付费需求。
+源码和发行包见 [GitHub](https://github.com/Afr1ste/harness-release-lab/releases)，尚未发布 PyPI。
+
+[![Release contracts](https://github.com/Afr1ste/harness-release-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Afr1ste/harness-release-lab/actions/workflows/ci.yml)
 
 ## 立即运行
 
 在仓库目录中，使用 Python 3.11+，建议先创建虚拟环境：
 
 ```sh
+git clone https://github.com/Afr1ste/harness-release-lab.git
+cd harness-release-lab
 python -m pip install -e .
 python -m examples.http.verify
 hrl serve
@@ -47,6 +51,17 @@ python -m examples.http.verify --dsh
 这里通过官方 Python SDK 启动发布版 DSH，加载独立应用的 `create_order`
 插件，再调用相同的订单服务。模型端由本地脚本驱动，不需要密钥或付费推理。
 它验证工具执行与业务状态，不代表真实模型的决策能力。
+
+也已接入 Pydantic AI 的真实 Agent、工具调用和 ModelRetry 重试链路：
+
+```sh
+python -m pip install -e ".[pydantic-ai]"
+python -m examples.http.verify --pydantic-ai
+```
+
+三个实现都能返回成功，但业务状态检查仍能识别多单和漏单。
+这是第三方框架兼容性证据，不是第三方用户采用的证据。
+详见 [Pydantic AI 接入说明](docs/PYDANTIC_AI.md)。
 
 ## 接入现有 Agent
 

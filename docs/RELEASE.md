@@ -1,37 +1,32 @@
-# v0.2 release package — not published
+# Experimental release
 
-## Repository metadata
+Repository: [Afr1ste/harness-release-lab](https://github.com/Afr1ste/harness-release-lab).
+License: MIT. Package name: `harness-release-lab`. No PyPI publication.
 
-- Name: `harness-release-lab` (availability not reserved)
-- Description: Test existing Python agents and DSH tools against HTTP services. Independent state contracts, pytest and CI evidence.
-- Topics: `dsh-plugin`, `deepseek-harness`, `agent-testing`, `python`, `reliability`,
-  `fault-injection`, `developer-tools`
-- License: MIT
+## Release checks
 
-## Suggested launch text
+1. Run Ruff and the full tests with both optional integrations installed.
+2. Run the native DSH controls, ordinary HTTP client, application-owned DSH tool,
+   and Pydantic AI integration. Incorrect implementations must be blocked.
+3. Build the wheel and validate its resources. Install it into a fresh environment
+   outside the checkout and run both passing and failing pytest contracts.
+4. Push and verify every Windows/Linux, Python 3.11/3.12 Actions job.
+5. Tag only a verified commit; attach the wheel, tracked source archive and SHA256
+   checksums to an experimental GitHub prerelease.
 
-We built Harness Release Lab to test a specific agent failure:
-a business write commits, its response disappears, and a retry duplicates the work.
+Use the [Actions history](https://github.com/Afr1ste/harness-release-lab/actions/workflows/ci.yml)
+and [release page](https://github.com/Afr1ste/harness-release-lab/releases)
+for the exact executed commit and downloadable artifacts.
 
-It runs existing agent commands against your HTTP tool service, injects bounded
-failures and reads independent state. Use the CLI or pytest fixture and export
-HTML/JSON/JUnit/Markdown evidence. A native DSH order plugin example catches both
-duplicate writes and over-broad idempotency keys that swallow legitimate operations.
+## Scope of the release
 
-The model is scripted in the demo, so these are reproducible orchestration tests,
-not claims about model intelligence. We'd especially value feedback from maintainers
-who want to test their own tool changes against a business contract.
-Existing products already provide fault injection and state contracts. This is an
-experimental Python/DSH integration tool, not production certification or validated demand.
+Runs existing agent commands against an HTTP tool service, injects bounded faults,
+and reads independent state. The Python API, pytest fixture and CLI produce
+HTML/JSON/JUnit/Markdown evidence. Real DSH and Pydantic AI examples catch both
+repeat writes and idempotency keys that swallow legitimate operations.
 
-## Publication checklist
-
-- [ ] Owner reviews source, demo, project name and license.
-- [ ] Choose the owner's GitHub namespace and create the repository.
-- [ ] Push the reviewed source and verify remote Actions results.
-- [ ] Replace local acceptance references with the matching commit/release identity.
-- [ ] Publish a tagged source release and attach tested artifacts.
-- [ ] If desired, reserve/publish the package only after a clean registry-install check.
-- [ ] Obtain authorization before posting messages or submitting directory listings.
-
-No public repository, package registry release or outreach has occurred.
+Included model fixtures are scripted. These are reproducible orchestration tests,
+not claims about model intelligence. Existing tools already provide fault injection
+and state contracts. This is an experimental integration tool, not production
+certification or proof of demand. No outreach or directory submissions are part of
+this release process.

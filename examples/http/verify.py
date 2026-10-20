@@ -13,7 +13,12 @@ from harness_release_lab.server import local_server
 root = Path(__file__).resolve().parents[2]
 contract = load_http_contract(root / "examples/http/order.yaml")
 output = root / ".lab"
-script = "dsh_agent.py" if "--dsh" in sys.argv else "agent.py"
+if "--dsh" in sys.argv:
+    script, framework = "dsh_agent.py", "Native DSH"
+elif "--pydantic-ai" in sys.argv:
+    script, framework = "pydantic_agent.py", "Pydantic AI"
+else:
+    script, framework = "agent.py", "Python client"
 with local_server(create_app(output / "http-orders.sqlite")) as url:
     reports = {
         mode: run_http_contract(
@@ -21,7 +26,7 @@ with local_server(create_app(output / "http-orders.sqlite")) as url:
             [sys.executable, str(root / "examples/http" / script), mode],
             output,
             env={**os.environ, "HRL_UPSTREAM": url},
-            label=f"{'Native DSH' if '--dsh' in sys.argv else 'Python client'} · {mode}",
+            label=f"{framework} · {mode}",
         )
         for mode in ("fixed", "broken", "over-dedup")
     }

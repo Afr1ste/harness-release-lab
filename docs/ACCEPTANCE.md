@@ -1,8 +1,26 @@
 # 验收记录
 
-验证日期：2026-10-20。状态：**v0.2 本地发布候选已完成，可作为实验性开源工具发布；尚未推送 GitHub。**
+验证日期：2026-10-20。v0.2.1 的公开发布验证见下节；v0.2 与 v0.1 保留为历史记录。
 
-## v0.2 新增验收
+## v0.2.1 发布验证
+
+- 本地 Windows / Python 3.12.9：66 项测试全部通过，Ruff 检查通过。
+- Pydantic AI 2.58.0：真实框架处理工具调用及 ModelRetry；三个进程均正常结束，
+  独立状态分别得到 2、3、1 单，只有 2 单通过。模型使用官方 FunctionModel 测试接口。
+- 修复参考用例的误报：普通并发请求不再使用超时故障用例专用的 200ms 截止时间；
+  新增 300ms 业务响应延迟的并发回归测试，原超时故障仍保留。
+- 子进程输出可显式开启以诊断失败，默认不记录。
+- [测试结果](evidence/v0.2.1-test-results.xml)、
+  [正确工具](evidence/pydantic-fixed.html)、
+  [重复下单](evidence/pydantic-broken.html)、
+  [过度去重](evidence/pydantic-over-dedup.html)。
+- 公开仓库：[Afr1ste/harness-release-lab](https://github.com/Afr1ste/harness-release-lab)。
+  跨平台结果以 [Actions](https://github.com/Afr1ste/harness-release-lab/actions/workflows/ci.yml)
+  实际运行状态为准；此处不把工作流配置当作通过证据。
+
+本次仍没有第三方客户试用或付费需求证据。Pydantic AI 集成不是商业验证。
+
+## v0.2 历史验收
 
 | 项目 | 实测结果 |
 |---|---|
