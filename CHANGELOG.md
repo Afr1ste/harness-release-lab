@@ -1,6 +1,14 @@
 # Changelog
 
-## 0.2.3 — 2026-10-20
+## 0.2.4 — 2026-10-20
+
+- Include the timing fixes validated in v0.2.3.
+- Explicitly include the selected reports under `.lab` in CI artifacts. Adding
+  diagnostic glob paths exposed the upload action's hidden-directory exclusion.
+- Fail CI if no report artifacts are found; successful test logs alone are not
+  sufficient release evidence.
+
+## 0.2.3 — 2026-10-20 (validation tag; artifact-upload issue found before release)
 
 - Include the v0.2.2 request-count fix and event-controlled drain test.
 - Reproduce a false block with 300ms service latency: a stable-key agent committed

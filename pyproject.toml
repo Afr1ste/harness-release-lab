@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "harness-release-lab"
-version = "0.2.3"
+version = "0.2.4"
 description = "State-based release gates for tool-using agents. Reproduce ambiguous writes before shipping."
 readme = "README.md"
 requires-python = ">=3.11"

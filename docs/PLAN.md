@@ -1,6 +1,6 @@
 # Implementation and acceptance plan
 
-Date: 2026-10-20. Current patch: v0.2.3 corrects a timing-sensitive test exposed
+Date: 2026-10-20. Current patch: v0.2.4 corrects a timing-sensitive test exposed
 by the v0.2.1 tag run. See `ACCEPTANCE.md` for the failure and fix.
 Both main and tag CI must finish before a new release is published.
 
