@@ -1,0 +1,6 @@
+schema_version: 1
+name: Native plugin release contract
+scenarios:
+  - id: observer-does-not-break-write
+    title: Observer preserves successful tool result
+    description: The business write commits and the runtime must deliver a successful result. A throwing post-execute observer is a release regression.

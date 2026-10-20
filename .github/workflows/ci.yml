@@ -1,0 +1,30 @@
+name: Release contracts
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  contracts:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.12"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -e ".[dev,dsh]"
+      - run: ruff check src tests examples
+      - run: ruff format --check src tests examples
+      - run: pytest -q --junitxml=.lab/test-results.xml
+      - run: hrl demo --dsh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-evidence-${{ matrix.os }}-${{ matrix.python }}
+          path: |
+            .lab/runs/*/report.json
+            .lab/runs/*/report.html
+            .lab/runs/*/junit.xml
+            .lab/test-results.xml

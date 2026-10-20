@@ -1,0 +1,1617 @@
+{
+  "schema_version": 1,
+  "id": "20261020T105530-d7b8f9d0a0",
+  "created_at": "2026-10-20T10:55:36.469220+00:00",
+  "target": "dsh-fixed",
+  "label": "",
+  "suite_name": "Business writes / release contract",
+  "suite_hash": "c943c1024d552b026602eec892af96cd005dccafcd41a894221a6166806c4378",
+  "version": "0.1.0",
+  "evidence_mode": "real-dsh-scripted-model",
+  "cases": [
+    {
+      "scenario": {
+        "id": "happy-path",
+        "title": "Ordinary write",
+        "description": "One request creates one refund receipt. This control must pass before fault results are meaningful.",
+        "operation": {
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        "faults": [],
+        "concurrent_calls": 1,
+        "expected_effects": 1,
+        "expected_outcome": "completed",
+        "max_attempts": 3
+      },
+      "passed": true,
+      "duration_ms": 750,
+      "checks": [
+        {
+          "name": "adapter_completed",
+          "passed": true,
+          "expected": "no adapter error",
+          "actual": "no adapter error",
+          "explanation": "Infrastructure failures cannot pass."
+        },
+        {
+          "name": "effect_count",
+          "passed": true,
+          "expected": 1,
+          "actual": 1,
+          "explanation": "Count committed receipts in the business database."
+        },
+        {
+          "name": "effect_payload",
+          "passed": true,
+          "expected": true,
+          "actual": true,
+          "explanation": "Every committed receipt must match the requested order and amount."
+        },
+        {
+          "name": "outcome",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed",
+          "explanation": "Verify the declared outcome separately from business state."
+        },
+        {
+          "name": "attempt_budget",
+          "passed": true,
+          "expected": "1..3",
+          "actual": 1,
+          "explanation": "Missing calls and runaway retries both fail."
+        },
+        {
+          "name": "faults_exercised",
+          "passed": true,
+          "expected": [],
+          "actual": [],
+          "explanation": "A scenario only passes if its entire fault schedule was exercised."
+        },
+        {
+          "name": "delivery_exercised",
+          "passed": true,
+          "expected": ">=1",
+          "actual": 1,
+          "explanation": "Every requested delivery must reach the business service."
+        },
+        {
+          "name": "concurrency_exercised",
+          "passed": true,
+          "expected": "not required",
+          "actual": "not required",
+          "explanation": "A server-side barrier proves requested deliveries overlapped."
+        }
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "kind": "request",
+          "attempt": 1,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 2,
+          "kind": "commit",
+          "attempt": 1,
+          "receipt_id": 1,
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        {
+          "seq": 3,
+          "kind": "response_prepared",
+          "attempt": 1,
+          "status": 200,
+          "delay_ms": 0
+        }
+      ],
+      "effects": [
+        {
+          "id": 1,
+          "operation_key": "refund:order-1042",
+          "payload_hash": "7aa618e5d7013226a78f81b79ebff3c49f3869e842b4295853751cd7036c407b",
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        }
+      ],
+      "agent": {
+        "outcome": "completed",
+        "detail": "",
+        "metadata": {
+          "sdk_version": "0.2.1rc2",
+          "runtime_version": "0.2.1rc2",
+          "finish_reason": "completed",
+          "model_requests": [
+            {
+              "request": 1,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": []
+            },
+            {
+              "request": 2,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 200,
+                  "body": "{\"receipt_id\":1,\"status\":\"committed\"}"
+                }
+              ]
+            }
+          ],
+          "runtime_event_count": 20,
+          "model": "local scripted Messages fixture; no inference"
+        }
+      },
+      "error": null
+    },
+    {
+      "scenario": {
+        "id": "lost-ack",
+        "title": "Committed, then 503",
+        "description": "The business write commits, but its response is replaced by HTTP 503. Retrying must reuse the operation key.",
+        "operation": {
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        "faults": [
+          "after_503"
+        ],
+        "concurrent_calls": 1,
+        "expected_effects": 1,
+        "expected_outcome": "completed",
+        "max_attempts": 3
+      },
+      "passed": true,
+      "duration_ms": 781,
+      "checks": [
+        {
+          "name": "adapter_completed",
+          "passed": true,
+          "expected": "no adapter error",
+          "actual": "no adapter error",
+          "explanation": "Infrastructure failures cannot pass."
+        },
+        {
+          "name": "effect_count",
+          "passed": true,
+          "expected": 1,
+          "actual": 1,
+          "explanation": "Count committed receipts in the business database."
+        },
+        {
+          "name": "effect_payload",
+          "passed": true,
+          "expected": true,
+          "actual": true,
+          "explanation": "Every committed receipt must match the requested order and amount."
+        },
+        {
+          "name": "outcome",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed",
+          "explanation": "Verify the declared outcome separately from business state."
+        },
+        {
+          "name": "attempt_budget",
+          "passed": true,
+          "expected": "1..3",
+          "actual": 2,
+          "explanation": "Missing calls and runaway retries both fail."
+        },
+        {
+          "name": "faults_exercised",
+          "passed": true,
+          "expected": [
+            "after_503"
+          ],
+          "actual": [
+            "after_503"
+          ],
+          "explanation": "A scenario only passes if its entire fault schedule was exercised."
+        },
+        {
+          "name": "delivery_exercised",
+          "passed": true,
+          "expected": ">=1",
+          "actual": 2,
+          "explanation": "Every requested delivery must reach the business service."
+        },
+        {
+          "name": "concurrency_exercised",
+          "passed": true,
+          "expected": "not required",
+          "actual": "not required",
+          "explanation": "A server-side barrier proves requested deliveries overlapped."
+        }
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "kind": "request",
+          "attempt": 1,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 2,
+          "kind": "fault",
+          "attempt": 1,
+          "fault": "after_503"
+        },
+        {
+          "seq": 3,
+          "kind": "commit",
+          "attempt": 1,
+          "receipt_id": 1,
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        {
+          "seq": 4,
+          "kind": "response_prepared",
+          "attempt": 1,
+          "status": 503,
+          "delay_ms": 0
+        },
+        {
+          "seq": 5,
+          "kind": "request",
+          "attempt": 2,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 6,
+          "kind": "deduplicated",
+          "attempt": 2,
+          "receipt_id": 1
+        },
+        {
+          "seq": 7,
+          "kind": "response_prepared",
+          "attempt": 2,
+          "status": 200,
+          "delay_ms": 0
+        }
+      ],
+      "effects": [
+        {
+          "id": 1,
+          "operation_key": "refund:order-1042",
+          "payload_hash": "7aa618e5d7013226a78f81b79ebff3c49f3869e842b4295853751cd7036c407b",
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        }
+      ],
+      "agent": {
+        "outcome": "completed",
+        "detail": "",
+        "metadata": {
+          "sdk_version": "0.2.1rc2",
+          "runtime_version": "0.2.1rc2",
+          "finish_reason": "completed",
+          "model_requests": [
+            {
+              "request": 1,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": []
+            },
+            {
+              "request": 2,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"response_lost\",\"attempt\":1}"
+                }
+              ]
+            },
+            {
+              "request": 3,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"response_lost\",\"attempt\":1}"
+                },
+                {
+                  "http_status": 200,
+                  "body": "{\"receipt_id\":1,\"status\":\"committed\"}"
+                }
+              ]
+            }
+          ],
+          "runtime_event_count": 26,
+          "model": "local scripted Messages fixture; no inference"
+        }
+      },
+      "error": null
+    },
+    {
+      "scenario": {
+        "id": "lost-ack-twice",
+        "title": "Two lost acknowledgements",
+        "description": "Both the first commit and its retry lose their responses. One logical operation must still produce exactly one effect.",
+        "operation": {
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        "faults": [
+          "after_503",
+          "after_503"
+        ],
+        "concurrent_calls": 1,
+        "expected_effects": 1,
+        "expected_outcome": "completed",
+        "max_attempts": 3
+      },
+      "passed": true,
+      "duration_ms": 687,
+      "checks": [
+        {
+          "name": "adapter_completed",
+          "passed": true,
+          "expected": "no adapter error",
+          "actual": "no adapter error",
+          "explanation": "Infrastructure failures cannot pass."
+        },
+        {
+          "name": "effect_count",
+          "passed": true,
+          "expected": 1,
+          "actual": 1,
+          "explanation": "Count committed receipts in the business database."
+        },
+        {
+          "name": "effect_payload",
+          "passed": true,
+          "expected": true,
+          "actual": true,
+          "explanation": "Every committed receipt must match the requested order and amount."
+        },
+        {
+          "name": "outcome",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed",
+          "explanation": "Verify the declared outcome separately from business state."
+        },
+        {
+          "name": "attempt_budget",
+          "passed": true,
+          "expected": "1..3",
+          "actual": 3,
+          "explanation": "Missing calls and runaway retries both fail."
+        },
+        {
+          "name": "faults_exercised",
+          "passed": true,
+          "expected": [
+            "after_503",
+            "after_503"
+          ],
+          "actual": [
+            "after_503",
+            "after_503"
+          ],
+          "explanation": "A scenario only passes if its entire fault schedule was exercised."
+        },
+        {
+          "name": "delivery_exercised",
+          "passed": true,
+          "expected": ">=1",
+          "actual": 3,
+          "explanation": "Every requested delivery must reach the business service."
+        },
+        {
+          "name": "concurrency_exercised",
+          "passed": true,
+          "expected": "not required",
+          "actual": "not required",
+          "explanation": "A server-side barrier proves requested deliveries overlapped."
+        }
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "kind": "request",
+          "attempt": 1,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 2,
+          "kind": "fault",
+          "attempt": 1,
+          "fault": "after_503"
+        },
+        {
+          "seq": 3,
+          "kind": "commit",
+          "attempt": 1,
+          "receipt_id": 1,
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        {
+          "seq": 4,
+          "kind": "response_prepared",
+          "attempt": 1,
+          "status": 503,
+          "delay_ms": 0
+        },
+        {
+          "seq": 5,
+          "kind": "request",
+          "attempt": 2,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 6,
+          "kind": "fault",
+          "attempt": 2,
+          "fault": "after_503"
+        },
+        {
+          "seq": 7,
+          "kind": "deduplicated",
+          "attempt": 2,
+          "receipt_id": 1
+        },
+        {
+          "seq": 8,
+          "kind": "response_prepared",
+          "attempt": 2,
+          "status": 503,
+          "delay_ms": 0
+        },
+        {
+          "seq": 9,
+          "kind": "request",
+          "attempt": 3,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 10,
+          "kind": "deduplicated",
+          "attempt": 3,
+          "receipt_id": 1
+        },
+        {
+          "seq": 11,
+          "kind": "response_prepared",
+          "attempt": 3,
+          "status": 200,
+          "delay_ms": 0
+        }
+      ],
+      "effects": [
+        {
+          "id": 1,
+          "operation_key": "refund:order-1042",
+          "payload_hash": "7aa618e5d7013226a78f81b79ebff3c49f3869e842b4295853751cd7036c407b",
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        }
+      ],
+      "agent": {
+        "outcome": "completed",
+        "detail": "",
+        "metadata": {
+          "sdk_version": "0.2.1rc2",
+          "runtime_version": "0.2.1rc2",
+          "finish_reason": "completed",
+          "model_requests": [
+            {
+              "request": 1,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": []
+            },
+            {
+              "request": 2,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"response_lost\",\"attempt\":1}"
+                }
+              ]
+            },
+            {
+              "request": 3,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"response_lost\",\"attempt\":1}"
+                },
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"response_lost\",\"attempt\":2}"
+                }
+              ]
+            },
+            {
+              "request": 4,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"response_lost\",\"attempt\":1}"
+                },
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"response_lost\",\"attempt\":2}"
+                },
+                {
+                  "http_status": 200,
+                  "body": "{\"receipt_id\":1,\"status\":\"committed\"}"
+                }
+              ]
+            }
+          ],
+          "runtime_event_count": 32,
+          "model": "local scripted Messages fixture; no inference"
+        }
+      },
+      "error": null
+    },
+    {
+      "scenario": {
+        "id": "timeout-after-commit",
+        "title": "Timeout after commit",
+        "description": "The receipt is durable before the server delays its response beyond the client deadline.",
+        "operation": {
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        "faults": [
+          "after_timeout"
+        ],
+        "concurrent_calls": 1,
+        "expected_effects": 1,
+        "expected_outcome": "completed",
+        "max_attempts": 3
+      },
+      "passed": true,
+      "duration_ms": 969,
+      "checks": [
+        {
+          "name": "adapter_completed",
+          "passed": true,
+          "expected": "no adapter error",
+          "actual": "no adapter error",
+          "explanation": "Infrastructure failures cannot pass."
+        },
+        {
+          "name": "effect_count",
+          "passed": true,
+          "expected": 1,
+          "actual": 1,
+          "explanation": "Count committed receipts in the business database."
+        },
+        {
+          "name": "effect_payload",
+          "passed": true,
+          "expected": true,
+          "actual": true,
+          "explanation": "Every committed receipt must match the requested order and amount."
+        },
+        {
+          "name": "outcome",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed",
+          "explanation": "Verify the declared outcome separately from business state."
+        },
+        {
+          "name": "attempt_budget",
+          "passed": true,
+          "expected": "1..3",
+          "actual": 2,
+          "explanation": "Missing calls and runaway retries both fail."
+        },
+        {
+          "name": "faults_exercised",
+          "passed": true,
+          "expected": [
+            "after_timeout"
+          ],
+          "actual": [
+            "after_timeout"
+          ],
+          "explanation": "A scenario only passes if its entire fault schedule was exercised."
+        },
+        {
+          "name": "delivery_exercised",
+          "passed": true,
+          "expected": ">=1",
+          "actual": 2,
+          "explanation": "Every requested delivery must reach the business service."
+        },
+        {
+          "name": "concurrency_exercised",
+          "passed": true,
+          "expected": "not required",
+          "actual": "not required",
+          "explanation": "A server-side barrier proves requested deliveries overlapped."
+        }
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "kind": "request",
+          "attempt": 1,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 2,
+          "kind": "fault",
+          "attempt": 1,
+          "fault": "after_timeout"
+        },
+        {
+          "seq": 3,
+          "kind": "commit",
+          "attempt": 1,
+          "receipt_id": 1,
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        {
+          "seq": 4,
+          "kind": "response_prepared",
+          "attempt": 1,
+          "status": 200,
+          "delay_ms": 600
+        },
+        {
+          "seq": 5,
+          "kind": "request",
+          "attempt": 2,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 6,
+          "kind": "deduplicated",
+          "attempt": 2,
+          "receipt_id": 1
+        },
+        {
+          "seq": 7,
+          "kind": "response_prepared",
+          "attempt": 2,
+          "status": 200,
+          "delay_ms": 0
+        }
+      ],
+      "effects": [
+        {
+          "id": 1,
+          "operation_key": "refund:order-1042",
+          "payload_hash": "7aa618e5d7013226a78f81b79ebff3c49f3869e842b4295853751cd7036c407b",
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        }
+      ],
+      "agent": {
+        "outcome": "completed",
+        "detail": "",
+        "metadata": {
+          "sdk_version": "0.2.1rc2",
+          "runtime_version": "0.2.1rc2",
+          "finish_reason": "completed",
+          "model_requests": [
+            {
+              "request": 1,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": []
+            },
+            {
+              "request": 2,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 0,
+                  "body": "client deadline exceeded; commit state unknown"
+                }
+              ]
+            },
+            {
+              "request": 3,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 0,
+                  "body": "client deadline exceeded; commit state unknown"
+                },
+                {
+                  "http_status": 200,
+                  "body": "{\"receipt_id\":1,\"status\":\"committed\"}"
+                }
+              ]
+            }
+          ],
+          "runtime_event_count": 26,
+          "model": "local scripted Messages fixture; no inference"
+        }
+      },
+      "error": null
+    },
+    {
+      "scenario": {
+        "id": "rate-limit",
+        "title": "Rate limit before commit",
+        "description": "A 429 occurs before any write. A bounded retry should complete the operation.",
+        "operation": {
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        "faults": [
+          "before_429"
+        ],
+        "concurrent_calls": 1,
+        "expected_effects": 1,
+        "expected_outcome": "completed",
+        "max_attempts": 3
+      },
+      "passed": true,
+      "duration_ms": 797,
+      "checks": [
+        {
+          "name": "adapter_completed",
+          "passed": true,
+          "expected": "no adapter error",
+          "actual": "no adapter error",
+          "explanation": "Infrastructure failures cannot pass."
+        },
+        {
+          "name": "effect_count",
+          "passed": true,
+          "expected": 1,
+          "actual": 1,
+          "explanation": "Count committed receipts in the business database."
+        },
+        {
+          "name": "effect_payload",
+          "passed": true,
+          "expected": true,
+          "actual": true,
+          "explanation": "Every committed receipt must match the requested order and amount."
+        },
+        {
+          "name": "outcome",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed",
+          "explanation": "Verify the declared outcome separately from business state."
+        },
+        {
+          "name": "attempt_budget",
+          "passed": true,
+          "expected": "1..3",
+          "actual": 2,
+          "explanation": "Missing calls and runaway retries both fail."
+        },
+        {
+          "name": "faults_exercised",
+          "passed": true,
+          "expected": [
+            "before_429"
+          ],
+          "actual": [
+            "before_429"
+          ],
+          "explanation": "A scenario only passes if its entire fault schedule was exercised."
+        },
+        {
+          "name": "delivery_exercised",
+          "passed": true,
+          "expected": ">=1",
+          "actual": 2,
+          "explanation": "Every requested delivery must reach the business service."
+        },
+        {
+          "name": "concurrency_exercised",
+          "passed": true,
+          "expected": "not required",
+          "actual": "not required",
+          "explanation": "A server-side barrier proves requested deliveries overlapped."
+        }
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "kind": "request",
+          "attempt": 1,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 2,
+          "kind": "fault",
+          "attempt": 1,
+          "fault": "before_429"
+        },
+        {
+          "seq": 3,
+          "kind": "response_prepared",
+          "attempt": 1,
+          "status": 429,
+          "committed": false
+        },
+        {
+          "seq": 4,
+          "kind": "request",
+          "attempt": 2,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 5,
+          "kind": "commit",
+          "attempt": 2,
+          "receipt_id": 1,
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        {
+          "seq": 6,
+          "kind": "response_prepared",
+          "attempt": 2,
+          "status": 200,
+          "delay_ms": 0
+        }
+      ],
+      "effects": [
+        {
+          "id": 1,
+          "operation_key": "refund:order-1042",
+          "payload_hash": "7aa618e5d7013226a78f81b79ebff3c49f3869e842b4295853751cd7036c407b",
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        }
+      ],
+      "agent": {
+        "outcome": "completed",
+        "detail": "",
+        "metadata": {
+          "sdk_version": "0.2.1rc2",
+          "runtime_version": "0.2.1rc2",
+          "finish_reason": "completed",
+          "model_requests": [
+            {
+              "request": 1,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": []
+            },
+            {
+              "request": 2,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 429,
+                  "body": "{\"error\":\"before_429\",\"attempt\":1}"
+                }
+              ]
+            },
+            {
+              "request": 3,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 429,
+                  "body": "{\"error\":\"before_429\",\"attempt\":1}"
+                },
+                {
+                  "http_status": 200,
+                  "body": "{\"receipt_id\":1,\"status\":\"committed\"}"
+                }
+              ]
+            }
+          ],
+          "runtime_event_count": 26,
+          "model": "local scripted Messages fixture; no inference"
+        }
+      },
+      "error": null
+    },
+    {
+      "scenario": {
+        "id": "permission-denied",
+        "title": "Permission denied",
+        "description": "A denied action must terminate without a business write or retrying around the denial.",
+        "operation": {
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        "faults": [
+          "denied"
+        ],
+        "concurrent_calls": 1,
+        "expected_effects": 0,
+        "expected_outcome": "denied",
+        "max_attempts": 1
+      },
+      "passed": true,
+      "duration_ms": 750,
+      "checks": [
+        {
+          "name": "adapter_completed",
+          "passed": true,
+          "expected": "no adapter error",
+          "actual": "no adapter error",
+          "explanation": "Infrastructure failures cannot pass."
+        },
+        {
+          "name": "effect_count",
+          "passed": true,
+          "expected": 0,
+          "actual": 0,
+          "explanation": "Count committed receipts in the business database."
+        },
+        {
+          "name": "effect_payload",
+          "passed": true,
+          "expected": true,
+          "actual": true,
+          "explanation": "Every committed receipt must match the requested order and amount."
+        },
+        {
+          "name": "outcome",
+          "passed": true,
+          "expected": "denied",
+          "actual": "denied",
+          "explanation": "Verify the declared outcome separately from business state."
+        },
+        {
+          "name": "attempt_budget",
+          "passed": true,
+          "expected": "1..1",
+          "actual": 1,
+          "explanation": "Missing calls and runaway retries both fail."
+        },
+        {
+          "name": "faults_exercised",
+          "passed": true,
+          "expected": [
+            "denied"
+          ],
+          "actual": [
+            "denied"
+          ],
+          "explanation": "A scenario only passes if its entire fault schedule was exercised."
+        },
+        {
+          "name": "delivery_exercised",
+          "passed": true,
+          "expected": ">=1",
+          "actual": 1,
+          "explanation": "Every requested delivery must reach the business service."
+        },
+        {
+          "name": "concurrency_exercised",
+          "passed": true,
+          "expected": "not required",
+          "actual": "not required",
+          "explanation": "A server-side barrier proves requested deliveries overlapped."
+        }
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "kind": "request",
+          "attempt": 1,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 2,
+          "kind": "fault",
+          "attempt": 1,
+          "fault": "denied"
+        },
+        {
+          "seq": 3,
+          "kind": "response_prepared",
+          "attempt": 1,
+          "status": 403,
+          "committed": false
+        }
+      ],
+      "effects": [],
+      "agent": {
+        "outcome": "denied",
+        "detail": "",
+        "metadata": {
+          "sdk_version": "0.2.1rc2",
+          "runtime_version": "0.2.1rc2",
+          "finish_reason": "completed",
+          "model_requests": [
+            {
+              "request": 1,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": []
+            },
+            {
+              "request": 2,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 403,
+                  "body": "{\"error\":\"denied\",\"attempt\":1}"
+                }
+              ]
+            }
+          ],
+          "runtime_event_count": 20,
+          "model": "local scripted Messages fixture; no inference"
+        }
+      },
+      "error": null
+    },
+    {
+      "scenario": {
+        "id": "outage",
+        "title": "Persistent dependency outage",
+        "description": "Three pre-commit failures must stop at the attempt budget, report failure, and leave no receipt.",
+        "operation": {
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        "faults": [
+          "before_503",
+          "before_503",
+          "before_503"
+        ],
+        "concurrent_calls": 1,
+        "expected_effects": 0,
+        "expected_outcome": "failed",
+        "max_attempts": 3
+      },
+      "passed": true,
+      "duration_ms": 781,
+      "checks": [
+        {
+          "name": "adapter_completed",
+          "passed": true,
+          "expected": "no adapter error",
+          "actual": "no adapter error",
+          "explanation": "Infrastructure failures cannot pass."
+        },
+        {
+          "name": "effect_count",
+          "passed": true,
+          "expected": 0,
+          "actual": 0,
+          "explanation": "Count committed receipts in the business database."
+        },
+        {
+          "name": "effect_payload",
+          "passed": true,
+          "expected": true,
+          "actual": true,
+          "explanation": "Every committed receipt must match the requested order and amount."
+        },
+        {
+          "name": "outcome",
+          "passed": true,
+          "expected": "failed",
+          "actual": "failed",
+          "explanation": "Verify the declared outcome separately from business state."
+        },
+        {
+          "name": "attempt_budget",
+          "passed": true,
+          "expected": "1..3",
+          "actual": 3,
+          "explanation": "Missing calls and runaway retries both fail."
+        },
+        {
+          "name": "faults_exercised",
+          "passed": true,
+          "expected": [
+            "before_503",
+            "before_503",
+            "before_503"
+          ],
+          "actual": [
+            "before_503",
+            "before_503",
+            "before_503"
+          ],
+          "explanation": "A scenario only passes if its entire fault schedule was exercised."
+        },
+        {
+          "name": "delivery_exercised",
+          "passed": true,
+          "expected": ">=1",
+          "actual": 3,
+          "explanation": "Every requested delivery must reach the business service."
+        },
+        {
+          "name": "concurrency_exercised",
+          "passed": true,
+          "expected": "not required",
+          "actual": "not required",
+          "explanation": "A server-side barrier proves requested deliveries overlapped."
+        }
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "kind": "request",
+          "attempt": 1,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 2,
+          "kind": "fault",
+          "attempt": 1,
+          "fault": "before_503"
+        },
+        {
+          "seq": 3,
+          "kind": "response_prepared",
+          "attempt": 1,
+          "status": 503,
+          "committed": false
+        },
+        {
+          "seq": 4,
+          "kind": "request",
+          "attempt": 2,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 5,
+          "kind": "fault",
+          "attempt": 2,
+          "fault": "before_503"
+        },
+        {
+          "seq": 6,
+          "kind": "response_prepared",
+          "attempt": 2,
+          "status": 503,
+          "committed": false
+        },
+        {
+          "seq": 7,
+          "kind": "request",
+          "attempt": 3,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 8,
+          "kind": "fault",
+          "attempt": 3,
+          "fault": "before_503"
+        },
+        {
+          "seq": 9,
+          "kind": "response_prepared",
+          "attempt": 3,
+          "status": 503,
+          "committed": false
+        }
+      ],
+      "effects": [],
+      "agent": {
+        "outcome": "failed",
+        "detail": "",
+        "metadata": {
+          "sdk_version": "0.2.1rc2",
+          "runtime_version": "0.2.1rc2",
+          "finish_reason": "completed",
+          "model_requests": [
+            {
+              "request": 1,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": []
+            },
+            {
+              "request": 2,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"before_503\",\"attempt\":1}"
+                }
+              ]
+            },
+            {
+              "request": 3,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"before_503\",\"attempt\":1}"
+                },
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"before_503\",\"attempt\":2}"
+                }
+              ]
+            },
+            {
+              "request": 4,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"before_503\",\"attempt\":1}"
+                },
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"before_503\",\"attempt\":2}"
+                },
+                {
+                  "http_status": 503,
+                  "body": "{\"error\":\"before_503\",\"attempt\":3}"
+                }
+              ]
+            }
+          ],
+          "runtime_event_count": 32,
+          "model": "local scripted Messages fixture; no inference"
+        }
+      },
+      "error": null
+    },
+    {
+      "scenario": {
+        "id": "concurrent-delivery",
+        "title": "Concurrent duplicate delivery",
+        "description": "Two deliveries of one logical operation race. The durable ledger must contain a single receipt.",
+        "operation": {
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        "faults": [],
+        "concurrent_calls": 2,
+        "expected_effects": 1,
+        "expected_outcome": "completed",
+        "max_attempts": 2
+      },
+      "passed": true,
+      "duration_ms": 750,
+      "checks": [
+        {
+          "name": "adapter_completed",
+          "passed": true,
+          "expected": "no adapter error",
+          "actual": "no adapter error",
+          "explanation": "Infrastructure failures cannot pass."
+        },
+        {
+          "name": "effect_count",
+          "passed": true,
+          "expected": 1,
+          "actual": 1,
+          "explanation": "Count committed receipts in the business database."
+        },
+        {
+          "name": "effect_payload",
+          "passed": true,
+          "expected": true,
+          "actual": true,
+          "explanation": "Every committed receipt must match the requested order and amount."
+        },
+        {
+          "name": "outcome",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed",
+          "explanation": "Verify the declared outcome separately from business state."
+        },
+        {
+          "name": "attempt_budget",
+          "passed": true,
+          "expected": "1..2",
+          "actual": 2,
+          "explanation": "Missing calls and runaway retries both fail."
+        },
+        {
+          "name": "faults_exercised",
+          "passed": true,
+          "expected": [],
+          "actual": [],
+          "explanation": "A scenario only passes if its entire fault schedule was exercised."
+        },
+        {
+          "name": "delivery_exercised",
+          "passed": true,
+          "expected": ">=2",
+          "actual": 2,
+          "explanation": "Every requested delivery must reach the business service."
+        },
+        {
+          "name": "concurrency_exercised",
+          "passed": true,
+          "expected": 2,
+          "actual": 2,
+          "explanation": "A server-side barrier proves requested deliveries overlapped."
+        }
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "kind": "concurrent_arrival",
+          "arrival": 1
+        },
+        {
+          "seq": 2,
+          "kind": "request",
+          "attempt": 1,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 3,
+          "kind": "commit",
+          "attempt": 1,
+          "receipt_id": 1,
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        },
+        {
+          "seq": 4,
+          "kind": "response_prepared",
+          "attempt": 1,
+          "status": 200,
+          "delay_ms": 0
+        },
+        {
+          "seq": 5,
+          "kind": "concurrent_arrival",
+          "arrival": 2
+        },
+        {
+          "seq": 6,
+          "kind": "request",
+          "attempt": 2,
+          "operation_key": "refund:order-1042",
+          "payload": {
+            "order_id": "order-1042",
+            "amount_cents": 4900
+          }
+        },
+        {
+          "seq": 7,
+          "kind": "deduplicated",
+          "attempt": 2,
+          "receipt_id": 1
+        },
+        {
+          "seq": 8,
+          "kind": "response_prepared",
+          "attempt": 2,
+          "status": 200,
+          "delay_ms": 0
+        }
+      ],
+      "effects": [
+        {
+          "id": 1,
+          "operation_key": "refund:order-1042",
+          "payload_hash": "7aa618e5d7013226a78f81b79ebff3c49f3869e842b4295853751cd7036c407b",
+          "order_id": "order-1042",
+          "amount_cents": 4900
+        }
+      ],
+      "agent": {
+        "outcome": "completed",
+        "detail": "",
+        "metadata": {
+          "sdk_version": "0.2.1rc2",
+          "runtime_version": "0.2.1rc2",
+          "finish_reason": "completed",
+          "model_requests": [
+            {
+              "request": 1,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": []
+            },
+            {
+              "request": 2,
+              "tools": [
+                "lab_refund",
+                "pwsh",
+                "read_image",
+                "working_directory"
+              ],
+              "tool_results": [
+                {
+                  "http_status": 200,
+                  "body": "{\"receipt_id\":1,\"status\":\"committed\"}"
+                },
+                {
+                  "http_status": 200,
+                  "body": "{\"receipt_id\":1,\"status\":\"committed\"}"
+                }
+              ]
+            }
+          ],
+          "runtime_event_count": 22,
+          "model": "local scripted Messages fixture; no inference"
+        }
+      },
+      "error": null
+    }
+  ],
+  "passed": true,
+  "duration_ms": 6265,
+  "environment": {
+    "python": "3.12.9",
+    "platform": "Windows",
+    "engine_sha256": "591ef56eacc618084ba8f25b8fe8281f18d1c0c58936bf0eb054284bc596b507",
+    "dsh_patches": []
+  }
+}

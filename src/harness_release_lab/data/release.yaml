@@ -1,0 +1,40 @@
+schema_version: 1
+name: Business writes / release contract
+scenarios:
+  - id: happy-path
+    title: Ordinary write
+    description: One request creates one refund receipt. This control must pass before fault results are meaningful.
+  - id: lost-ack
+    title: Committed, then 503
+    description: The business write commits, but its response is replaced by HTTP 503. Retrying must reuse the operation key.
+    faults: [after_503]
+  - id: lost-ack-twice
+    title: Two lost acknowledgements
+    description: Both the first commit and its retry lose their responses. One logical operation must still produce exactly one effect.
+    faults: [after_503, after_503]
+  - id: timeout-after-commit
+    title: Timeout after commit
+    description: The receipt is durable before the server delays its response beyond the client deadline.
+    faults: [after_timeout]
+  - id: rate-limit
+    title: Rate limit before commit
+    description: A 429 occurs before any write. A bounded retry should complete the operation.
+    faults: [before_429]
+  - id: permission-denied
+    title: Permission denied
+    description: A denied action must terminate without a business write or retrying around the denial.
+    faults: [denied]
+    expected_effects: 0
+    expected_outcome: denied
+    max_attempts: 1
+  - id: outage
+    title: Persistent dependency outage
+    description: Three pre-commit failures must stop at the attempt budget, report failure, and leave no receipt.
+    faults: [before_503, before_503, before_503]
+    expected_effects: 0
+    expected_outcome: failed
+  - id: concurrent-delivery
+    title: Concurrent duplicate delivery
+    description: Two deliveries of one logical operation race. The durable ledger must contain a single receipt.
+    concurrent_calls: 2
+    max_attempts: 2
