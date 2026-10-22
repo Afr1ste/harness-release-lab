@@ -1,6 +1,18 @@
 # 验收记录
 
-验证日期：2026-10-20。以下保留各版本的通过证据和后续发现的问题。
+验证日期：2026-10-22。以下保留各版本的通过证据和后续发现的问题。
+
+## v0.2.5 依赖安全维护
+
+- 将可选 Pydantic AI 集成升级为 2.59.0，解除对上游安全公告
+  [GHSA-4whf-38hw-pxxh](https://github.com/pydantic/pydantic-ai/security/advisories/GHSA-4whf-38hw-pxxh)
+  受影响版本的锁定。现有离线订单示例未注册相关网页抓取工具，未发现该路径可达。
+- 本地 Windows / Python 3.12 完整回归：68 项通过，无失败、错误或跳过；
+  真实 Pydantic AI 三组独立状态为 2 / 3 / 1 单，只有正确实现通过。
+- Ruff、依赖一致性、wheel 资源和仓库外干净安装检查通过。
+- 远程主分支和标签的四环境矩阵、下载报告核对及最终资产摘要，
+  以 [v0.2.5 发布页](https://github.com/Afr1ste/harness-release-lab/releases/tag/v0.2.5)
+  的实际发布证据为准；上述本地结果不代替发布验收。
 
 ## v0.2.4 最终验收
 

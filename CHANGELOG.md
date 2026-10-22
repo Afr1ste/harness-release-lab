@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.5 — 2026-10-22
+
+- Update the optional Pydantic AI integration pin to 2.59.0, which fixes
+  [GHSA-4whf-38hw-pxxh](https://github.com/pydantic/pydantic-ai/security/advisories/GHSA-4whf-38hw-pxxh).
+  The affected `web_fetch_tool` can exhaust resources on attacker-controlled HTML.
+  Our offline order examples do not register this tool; the update prevents the
+  integration extra from forcing consumers to install the affected version.
+- Retain the existing real-framework order-state regression controls and release
+  evidence requirements. No model calls or new runtime features are introduced.
+
 ## 0.2.4 — 2026-10-20
 
 - Include the timing fixes validated in v0.2.3.

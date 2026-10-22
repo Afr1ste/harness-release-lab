@@ -1,6 +1,12 @@
 # Pydantic AI integration
 
-Tested version: `pydantic-ai-slim==2.58.0`.
+Tested version: `pydantic-ai-slim==2.59.0`.
+
+The integration pins the patched release for
+[GHSA-4whf-38hw-pxxh](https://github.com/pydantic/pydantic-ai/security/advisories/GHSA-4whf-38hw-pxxh).
+These examples only register the order tool and use an offline FunctionModel;
+they do not register the affected `web_fetch_tool`. Existing installations using
+the optional integration should upgrade to HRL 0.2.5 or later.
 
 ```sh
 python -m pip install -e ".[pydantic-ai]"
