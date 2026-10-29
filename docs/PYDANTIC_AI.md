@@ -18,6 +18,14 @@ The executable in `examples/http/pydantic_agent.py` uses the installed framework
 There is no handwritten outer retry loop. The local `FunctionModel` selects the tool
 again after the framework records a retry prompt, preserving the business intent.
 
+Pydantic AI 2.60 changed tool retry messages from `RetryPromptPart` to
+`ToolReturnPart(outcome="retried")`. The example accepts both forms and counts only
+successful tool returns as completed intents. Otherwise, a retry can be mistaken
+for a completed order and the next call can use the wrong intent. CI also runs the
+three controls below against 2.63.0 in a separate compatibility job; the optional
+installation extra remains pinned to 2.59.0. This does not claim compatibility with
+every intervening version or with paid model providers.
+
 Three cases use identical tool arguments and the same state contract:
 
 | Application tool variant | Agent finishes successfully | Orders committed | State gate |

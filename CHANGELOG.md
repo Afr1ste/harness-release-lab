@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Handle Pydantic AI's newer `ToolReturnPart(outcome="retried")` messages in the
+  offline order example, and count only successful tool returns as completed
+  intents. Preserve the 2.59.0 integration pin and legacy retry messages.
+- Add a separate 2.63.0 compatibility check using the existing three real-framework
+  order-state controls; retries must still preserve intent and produce 2 / 3 / 1 orders.
+
 ## 0.2.5 — 2026-10-22
 
 - Update the optional Pydantic AI integration pin to 2.59.0, which fixes

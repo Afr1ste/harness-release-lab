@@ -6,6 +6,25 @@ concurrency:
   group: contracts-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  pydantic-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e ".[dev]" pydantic-ai-slim==2.63.0
+      - run: python -m pip check
+      - run: python -m pytest -q tests/test_pydantic_integration.py --junitxml=.lab/pydantic-compatibility.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pydantic-compatibility-2.63.0
+          retention-days: 7
+          include-hidden-files: true
+          if-no-files-found: error
+          path: .lab/pydantic-compatibility.xml
   contracts:
     timeout-minutes: 15
     strategy:

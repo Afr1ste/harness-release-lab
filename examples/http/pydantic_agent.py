@@ -27,9 +27,18 @@ def main():
         nonlocal observed_retry
         assert "create_order" in {tool.name for tool in info.function_tools}
         parts = [part for message in messages for part in message.parts]
-        observed_retry |= any(isinstance(part, RetryPromptPart) for part in parts)
+        # Since Pydantic AI 2.60, tool retries are ToolReturnPart(outcome='retried').
+        # Keep the legacy branch for the pinned 2.59 integration.
+        observed_retry |= any(
+            isinstance(part, RetryPromptPart)
+            or (isinstance(part, ToolReturnPart) and part.outcome == "retried")
+            for part in parts
+        )
         completed = sum(
-            isinstance(part, ToolReturnPart) and part.tool_name == "create_order" for part in parts
+            isinstance(part, ToolReturnPart)
+            and part.tool_name == "create_order"
+            and part.outcome == "success"
+            for part in parts
         )
         if completed == 2:
             return ModelResponse(parts=[TextPart("Two order intents completed.")])
