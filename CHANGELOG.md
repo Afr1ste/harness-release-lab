@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Refresh the verified environment snapshot to Pydantic 2.14.2 / pydantic-core
+  2.50.2, addressing upstream validation-bypass advisories
+  [GHSA-qpmf-fgh3-ff25](https://github.com/pydantic/pydantic/security/advisories/GHSA-qpmf-fgh3-ff25)
+  and [GHSA-3r8g-cqwr-jr29](https://github.com/pydantic/pydantic/security/advisories/GHSA-3r8g-cqwr-jr29).
+  No affected configuration was found in the project's models: contract/report
+  models forbid extra data, and there are no aliased Pydantic dataclasses or
+  TypedDict validators allowing extra data. The existing package dependency range
+  already permits the fixed version; this refresh does not upgrade consumers'
+  existing installations or change published v0.2.5 assets.
 - Handle Pydantic AI's newer `ToolReturnPart(outcome="retried")` messages in the
   offline order example, and count only successful tool returns as completed
   intents. Preserve the 2.59.0 integration pin and legacy retry messages.

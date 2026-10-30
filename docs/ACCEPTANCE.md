@@ -1,6 +1,21 @@
 # 验收记录
 
-验证日期：2026-10-29。以下保留各版本的通过证据和后续发现的问题。
+验证日期：2026-10-30。以下保留各版本的通过证据和后续发现的问题。
+
+## 2026-10-30 依赖验证快照维护
+
+- 项目本地验证环境及 `requirements-verified.txt` 更新至 Pydantic 2.14.2 /
+  pydantic-core 2.50.2，纳入上游两项校验绕过修复：
+  [额外字段键的 JSON 校验](https://github.com/pydantic/pydantic/security/advisories/GHSA-qpmf-fgh3-ff25)、
+  [允许额外字段的别名 TypedDict / dataclass 校验](https://github.com/pydantic/pydantic/security/advisories/GHSA-3r8g-cqwr-jr29)。
+- 检查项目模型后，未发现公告要求的受影响配置：契约与报告禁止额外字段；
+  没有允许额外字段的别名 Pydantic dataclass / TypedDict 校验器。
+  此项维护不代表已复现项目自身的可利用漏洞。
+- Windows / Python 3.12 本地回归 68 项通过，无失败、错误或跳过；
+  Ruff、依赖一致性、五轮稳定性、DSH 原生控制组、wheel 资源及仓库外干净安装通过。
+  Python / DSH / Pydantic AI 九项 HTTP 对照通过，三类实现分别保持 2 / 3 / 1 单。
+- 包依赖范围已经允许修复版本，未改动运行时代码或依赖下限，未发布新版本。
+  此快照更新不会升级使用者已有的环境，也不会修改 v0.2.5 发布产物。
 
 ## 2026-10-29 周维护：Pydantic AI 新版兼容性
 
