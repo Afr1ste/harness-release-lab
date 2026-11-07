@@ -1,12 +1,14 @@
 # Pydantic AI integration
 
-Tested version: `pydantic-ai-slim==2.59.0`.
+Tested version: `pydantic-ai-slim==2.66.0`.
 
-The integration pins the patched release for
+The integration pins 2.66.0, including the [November security fixes](https://github.com/pydantic/pydantic-ai/releases/tag/v2.66.0) and the earlier fix for
 [GHSA-4whf-38hw-pxxh](https://github.com/pydantic/pydantic-ai/security/advisories/GHSA-4whf-38hw-pxxh).
 These examples only register the order tool and use an offline FunctionModel;
-they do not register the affected `web_fetch_tool`. Existing installations using
-the optional integration should upgrade to HRL 0.2.5 or later.
+they do not register web fetching, UI/MCP adapters, embeddings or durable execution,
+and do not deserialize persisted framework message history. No affected path was
+found in these examples; upgrading removes the forced vulnerable dependency pin. Existing installations using
+the optional integration should upgrade to HRL 0.2.6 or later.
 
 ```sh
 python -m pip install -e ".[pydantic-ai]"
@@ -22,8 +24,8 @@ Pydantic AI 2.60 changed tool retry messages from `RetryPromptPart` to
 `ToolReturnPart(outcome="retried")`. The example accepts both forms and counts only
 successful tool returns as completed intents. Otherwise, a retry can be mistaken
 for a completed order and the next call can use the wrong intent. CI also runs the
-three controls below against 2.63.0 in a separate compatibility job; the optional
-installation extra remains pinned to 2.59.0. This does not claim compatibility with
+three controls below against 2.66.0 in a separate compatibility job; the optional
+installation extra remains pinned to 2.66.0. This does not claim compatibility with
 every intervening version or with paid model providers.
 
 Three cases use identical tool arguments and the same state contract:

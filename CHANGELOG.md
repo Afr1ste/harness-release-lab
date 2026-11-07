@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.2.6 — 2026-11-07
+
+- Update the optional Pydantic AI pin to 2.66.0 for the
+  [November security fixes](https://github.com/pydantic/pydantic-ai/releases/tag/v2.66.0).
+  The offline order examples do not enable the affected web, UI, embedding or
+  persisted-history paths; this removes a forced affected version for consumers.
+- Include the previously verified retry-message compatibility and dependency
+  snapshot maintenance below.
 
 - Refresh the verified environment snapshot to Pydantic 2.14.2 / pydantic-core
   2.50.2, addressing upstream validation-bypass advisories
@@ -13,8 +20,8 @@
   existing installations or change published v0.2.5 assets.
 - Handle Pydantic AI's newer `ToolReturnPart(outcome="retried")` messages in the
   offline order example, and count only successful tool returns as completed
-  intents. Preserve the 2.59.0 integration pin and legacy retry messages.
-- Add a separate 2.63.0 compatibility check using the existing three real-framework
+  intents. Preserve support for legacy retry messages.
+- Run a separate 2.66.0 integration check using the existing three real-framework
   order-state controls; retries must still preserve intent and produce 2 / 3 / 1 orders.
 
 ## 0.2.5 — 2026-10-22

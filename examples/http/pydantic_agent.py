@@ -28,7 +28,7 @@ def main():
         assert "create_order" in {tool.name for tool in info.function_tools}
         parts = [part for message in messages for part in message.parts]
         # Since Pydantic AI 2.60, tool retries are ToolReturnPart(outcome='retried').
-        # Keep the legacy branch for the pinned 2.59 integration.
+        # Keep the legacy branch for older integrations.
         observed_retry |= any(
             isinstance(part, RetryPromptPart)
             or (isinstance(part, ToolReturnPart) and part.outcome == "retried")
